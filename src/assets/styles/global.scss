@@ -1,0 +1,118 @@
+@import 'modern-normalize/modern-normalize.css';
+
+:root {
+	// Colors
+	--text: #cccccc;
+	--black: #111111;
+	--white: #ffffff;
+	--background: #222222;
+	--lightgray: #aaaaaa;
+	--gray: #888888;
+	--darkgray: #444444;
+	--yellow: #bb9000;
+	--red: #ff5060;
+	--green: #66cc55;
+
+	@include view-mobile-s {
+		font-size: 14px;
+	}
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	@include copy;
+}
+
+body {
+	background-color: var(--background);
+	min-height: 100vh;
+	min-height: 100svh;
+
+	*:focus {
+		outline: none;
+	}
+
+	*:focus-visible {
+		outline: 2px dotted var(--yellow);
+	}
+}
+
+a {
+	text-decoration: none;
+}
+
+button {
+	cursor: pointer;
+	border: none;
+	border-radius: 0;
+	appearance: none;
+	background-color: transparent;
+}
+
+.main-button {
+	@include font-heading;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px 9px;
+	border-radius: 8px;
+	border: 1px solid var(--lightgray);
+	color: var(--lightgray);
+	transition: 0.2s;
+	line-height: 1;
+
+	@include hover {
+		color: var(--white);
+		border-color: var(--white);
+	}
+}
+
+h1 {
+	@include h1;
+}
+
+h2 {
+	@include h2;
+}
+
+h3 {
+	@include h3;
+}
+
+h4 {
+	@include h4;
+}
+
+h5 {
+	@include h5;
+}
+
+h6 {
+	@include h6;
+}
+
+p,
+a,
+li {
+	@include copy;
+}
+
+ul {
+	@include ul;
+}
+
+ol {
+	@include ol;
+}
+
+small {
+	@include smallText;
+}

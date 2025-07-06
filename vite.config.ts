@@ -1,12 +1,24 @@
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-// @ts-expect-error process is a nodejs global
+const currentDir = dirname(fileURLToPath(import.meta.url));
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
+
+// @ts-expect-error
 export default defineConfig(async () => ({
 	plugins: [sveltekit()],
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: 'modern-compiler',
+				additionalData: `@use "${join(currentDir, './src/assets/styles/mixins')}" as *;`
+			}
+		}
+	},
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	//
