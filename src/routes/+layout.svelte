@@ -1,15 +1,10 @@
 <script lang="ts">
-	import '../assets/styles/global.scss';
+	import '$lib/assets/styles/global.scss';
+	import Header from 'lib/components/Header.svelte';
 
 	let { children } = $props();
 </script>
 
-<main>
-	{@render children?.()}
-</main>
+<Header />
 
-<style lang="scss">
-	main {
-		background-color: black;
-	}
-</style>
+{@render children?.()}

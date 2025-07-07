@@ -15,7 +15,7 @@ export default defineConfig(async () => ({
 		preprocessorOptions: {
 			scss: {
 				api: 'modern-compiler',
-				additionalData: `@use "${join(currentDir, './src/assets/styles/mixins')}" as *;`
+				additionalData: `@use "${join(currentDir, './src/lib/assets/styles/mixins')}" as *;`
 			}
 		}
 	},
