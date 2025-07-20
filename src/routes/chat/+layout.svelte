@@ -10,3 +10,13 @@
 		{@render children?.()}
 	</main>
 </div>
+
+<style lang="scss">
+	.layout {
+		padding-left: 250px;
+
+		main {
+			padding: 0 80px;
+		}
+	}
+</style>

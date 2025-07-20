@@ -20,9 +20,10 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 10px 20px;
+		height: var(--header-height);
 
 		.logo {
-			height: 24px;
+			height: 100%;
 			width: 22px;
 		}
 

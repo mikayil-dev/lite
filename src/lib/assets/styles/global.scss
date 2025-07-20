@@ -13,6 +13,9 @@
 	--red: #ff5060;
 	--green: #66cc55;
 
+	// Dimensions
+	--header-height: 45px;
+
 	@include view-mobile-s {
 		font-size: 14px;
 	}
