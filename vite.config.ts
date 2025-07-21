@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import Icons from 'unplugin-icons/vite';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const host = process.env.TAURI_DEV_HOST;
@@ -10,7 +11,7 @@ const host = process.env.TAURI_DEV_HOST;
 
 // @ts-expect-error
 export default defineConfig(async () => ({
-	plugins: [sveltekit()],
+	plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
 	css: {
 		preprocessorOptions: {
 			scss: {

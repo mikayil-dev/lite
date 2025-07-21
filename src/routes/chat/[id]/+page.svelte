@@ -1,3 +1,7 @@
+<script lang="ts">
+	import MessageInput from 'lib/components/chat/MessageInput.svelte';
+</script>
+
 <section>
-	<h1>Chat individual Page</h1>
+	<MessageInput />
 </section>
