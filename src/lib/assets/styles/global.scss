@@ -7,8 +7,8 @@
 	--background: #151515;
 	--dark-bg: #111111;
 	--lightgray: #aaaaaa;
-	--gray: #777777;
-	--darkgray: #333333;
+	--gray: #555555;
+	--darkgray: #222222;
 	--yellow: #bb9000;
 	--red: #ff5060;
 	--green: #66cc55;
@@ -25,6 +25,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	color: var(--text);
 }
 
 html {
@@ -44,7 +45,14 @@ body {
 	}
 
 	*:focus-visible {
-		outline: 2px dotted var(--yellow);
+		outline: none;
+	}
+
+	&[data-usingkeyboard] {
+		*:focus-visible {
+			outline: 2px dotted var(--yellow);
+		}
+
 	}
 }
 
