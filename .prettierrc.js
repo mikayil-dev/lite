@@ -9,5 +9,5 @@ export default {
 	bracketSameLine: false,
 	arrowParens: 'avoid',
 	plugins: ['prettier-plugin-svelte'],
-	overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }]
+	overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }],
 };
