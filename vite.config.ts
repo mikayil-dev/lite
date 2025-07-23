@@ -16,9 +16,9 @@ export default defineConfig(async () => ({
 		preprocessorOptions: {
 			scss: {
 				api: 'modern-compiler',
-				additionalData: `@use "${join(currentDir, './src/lib/assets/styles/mixins')}" as *;`
-			}
-		}
+				additionalData: `@use "${join(currentDir, './src/lib/assets/styles/mixins')}" as *;`,
+			},
+		},
 	},
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -34,12 +34,12 @@ export default defineConfig(async () => ({
 			? {
 					protocol: 'ws',
 					host,
-					port: 1421
+					port: 1421,
 				}
 			: undefined,
 		watch: {
 			// 3. tell vite to ignore watching `src-tauri`
-			ignored: ['**/src-tauri/**']
-		}
-	}
+			ignored: ['**/src-tauri/**'],
+		},
+	},
 }));
