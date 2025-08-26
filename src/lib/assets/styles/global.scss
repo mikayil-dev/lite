@@ -1,128 +1,127 @@
 @import 'modern-normalize/modern-normalize.css';
 
 :root {
-	// Colors
-	--text: #cccccc;
-	--white: #ffffff;
-	--background: #151515;
-	--dark-bg: #111111;
-	--lightgray: #aaaaaa;
-	--gray: #555555;
-	--darkgray: #222222;
-	--yellow: #bb9000;
-	--red: #ff5060;
-	--green: #66cc55;
+  // Colors
+  --text: #cccccc;
+  --white: #ffffff;
+  --background: #151515;
+  --dark-bg: #111111;
+  --lightgray: #aaaaaa;
+  --gray: #555555;
+  --darkgray: #222222;
+  --yellow: #bb9000;
+  --red: #ff5060;
+  --green: #66cc55;
 
-	// Dimensions
-	--header-height: 45px;
+  // Dimensions
+  --header-height: 45px;
 
-	@include view-mobile-s {
-		font-size: 14px;
-	}
+  @include view-mobile-s {
+    font-size: 14px;
+  }
 }
 
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	color: var(--text);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--text);
 }
 
 html {
-	font-size: 100%;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	@include copy;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @include copy;
 }
 
 body {
-	background-color: var(--background);
-	min-height: 100vh;
-	min-height: 100svh;
+  background-color: var(--background);
+  min-height: 100vh;
+  min-height: 100svh;
 
-	*:focus {
-		outline: none;
-	}
+  *:focus {
+    outline: none;
+  }
 
-	*:focus-visible {
-		outline: none;
-	}
+  *:focus-visible {
+    outline: none;
+  }
 
-	&[data-usingkeyboard] {
-		*:focus-visible {
-			outline: 2px dotted var(--yellow);
-		}
-	}
+  &[data-usingkeyboard] {
+    *:focus-visible {
+      outline: 2px dotted var(--yellow);
+    }
+  }
 }
 
 a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 button {
-	cursor: pointer;
-	border: none;
-	border-radius: 0;
-	appearance: none;
-	background-color: transparent;
+  cursor: pointer;
+  border: none;
+  border-radius: 0;
+  appearance: none;
+  background-color: transparent;
 }
 
 .main-button {
-	@include font-heading;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 16px 9px;
-	border-radius: 8px;
-	border: 1px solid var(--lightgray);
-	color: var(--lightgray);
-	transition: 0.2s;
-	line-height: 1;
+  @include font-heading;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--lightgray);
+  color: var(--lightgray);
+  line-height: 1;
 
-	@include hover {
-		color: var(--white);
-		border-color: var(--white);
-	}
+  @include hover {
+    color: var(--white);
+    border-color: var(--white);
+  }
 }
 
 h1 {
-	@include h1;
+  @include h1;
 }
 
 h2 {
-	@include h2;
+  @include h2;
 }
 
 h3 {
-	@include h3;
+  @include h3;
 }
 
 h4 {
-	@include h4;
+  @include h4;
 }
 
 h5 {
-	@include h5;
+  @include h5;
 }
 
 h6 {
-	@include h6;
+  @include h6;
 }
 
 p,
 a,
 li {
-	@include copy;
+  @include copy;
 }
 
 ul {
-	@include ul;
+  @include ul;
 }
 
 ol {
-	@include ol;
+  @include ol;
 }
 
 small {
-	@include smallText;
+  @include smallText;
 }
