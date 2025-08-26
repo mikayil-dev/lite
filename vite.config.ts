@@ -1,16 +1,17 @@
-import { defineConfig } from 'vite';
-import { sveltekit } from '@sveltejs/kit/vite';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+import { sveltekit } from '@sveltejs/kit/vite';
 import Icons from 'unplugin-icons/vite';
+import { defineConfig } from 'vite';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 
-// @ts-expect-error
-export default defineConfig(async () => ({
+// @ts-expect-error Viteconfig...
+export default defineConfig(() => ({
 	plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
 	css: {
 		preprocessorOptions: {
@@ -29,7 +30,7 @@ export default defineConfig(async () => ({
 	server: {
 		port: 1420,
 		strictPort: true,
-		host: host || false,
+		host: host ?? false,
 		hmr: host
 			? {
 					protocol: 'ws',
