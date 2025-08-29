@@ -6,7 +6,7 @@
 <div class="message-input-container">
   <textarea name="message" id="message"></textarea>
   <div class="toolbar">
-    <IconButton class="hi">
+    <IconButton>
       <SettingsIcon />
     </IconButton>
   </div>
@@ -14,10 +14,10 @@
 
 <style lang="scss">
   .message-input-container {
-    border-radius: 32px;
+    border-radius: 24px;
     background-color: var(--darkgray);
     box-shadow: 0 4px 8px #00000011;
-    padding: 12px 16px;
+    padding: 12px 16px 14px;
 
     textarea {
       padding: 8px;

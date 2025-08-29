@@ -14,7 +14,7 @@
 
 <style lang="scss">
   header {
-    background-color: var(--dark-bg);
+    background-color: var(--contrast-bg);
     border-bottom: 1px solid var(--darkgray);
     display: flex;
     align-items: center;

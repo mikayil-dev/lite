@@ -14,7 +14,7 @@
   aside {
     padding: 20px;
     width: 250px;
-    background-color: var(--dark-bg);
+    background-color: var(--contrast-bg);
     position: fixed;
     left: 0;
     top: var(--header-height);

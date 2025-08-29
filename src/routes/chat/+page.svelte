@@ -10,19 +10,12 @@
 
 <style lang="scss">
   .new-chat-page {
+    max-width: 900px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
     height: calc(100vh - var(--header-height));
     height: calc(100dvh - var(--header-height));
-
-    .message-input-wrapper {
-      padding-bottom: 32px;
-      background: linear-gradient(
-        to bottom,
-        transparent 50%,
-        var(--background) 50%
-      );
-    }
   }
 </style>
