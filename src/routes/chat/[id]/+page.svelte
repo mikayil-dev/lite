@@ -10,7 +10,7 @@
 
 <style lang="scss">
   .chat-page {
-    max-width: 900px;
+    max-width: 768px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

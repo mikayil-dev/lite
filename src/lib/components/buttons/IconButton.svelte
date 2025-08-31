@@ -3,23 +3,27 @@
   interface Props {
     children: Snippet;
     href?: string;
+    primary?: boolean;
     [key: string]: any;
   }
 
-  let { children, href, ...rest }: Props = $props();
+  let { children, href, primary, ...rest }: Props = $props();
 </script>
 
 {#if href}
-  <a class="icon-btn" {href} {...rest}>
+  <a class="icon-btn" class:primary {href} {...rest}>
     {@render children()}
   </a>
 {:else}
-  <button class="icon-btn" {...rest}>
+  <button class="icon-btn" class:primary {...rest}>
     {@render children()}
   </button>
 {/if}
 
 <style lang="scss">
+  // in case class prop gets overwritten by ...rest
+  a,
+  button,
   .icon-btn {
     border-radius: 200px;
     min-width: 32px;
@@ -30,6 +34,14 @@
     color: var(--text);
     background-color: var(--darkgray);
     font-size: 1em;
+
+    &.primary {
+      background-color: white;
+
+      :global * {
+        color: var(--darkgray);
+      }
+    }
 
     @include hover {
       background-color: var(--gray);

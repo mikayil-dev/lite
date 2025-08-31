@@ -1,3 +1,5 @@
+@use 'fonts';
+
 // Breakpoints
 @mixin view-desktop-m {
   @media (max-width: 1440px) {
@@ -43,14 +45,21 @@
 
 // Fonts and typography
 @mixin font-copy {
-  font-family: 'Arial';
+  font-family: 'FigTree', ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
   color: var(--text);
 }
 
 @mixin font-heading {
-  font-family: 'Verdana';
+  font-family: 'FigTree', ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
   color: var(--text);
-  text-transform: uppercase;
+}
+
+@mixin font-code {
+  font-family: 'JetBrainsMono', monospace;
 }
 
 @mixin copy {

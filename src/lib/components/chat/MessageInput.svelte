@@ -1,13 +1,26 @@
 <script lang="ts">
   import IconButton from '../buttons/IconButton.svelte';
   import SettingsIcon from '~icons/solar/settings-linear';
+  import ArrowUp from '~icons/solar/arrow-up-linear';
+
+  function onkeydown(
+    event: KeyboardEvent & { currentTarget: EventTarget & HTMLTextAreaElement },
+  ): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+    }
+  }
 </script>
 
 <div class="message-input-container">
-  <textarea name="message" id="message"></textarea>
+  <textarea name="message" id="message" {onkeydown}></textarea>
   <div class="toolbar">
     <IconButton>
       <SettingsIcon />
+    </IconButton>
+
+    <IconButton primary style="margin-left: auto;">
+      <ArrowUp />
     </IconButton>
   </div>
 </div>
@@ -28,6 +41,12 @@
       resize: none;
       width: 100%;
       height: 100%;
+      scrollbar-width: thin;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
     }
   }
 </style>

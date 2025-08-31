@@ -9,7 +9,7 @@ This template should help get you started developing with Tauri, SvelteKit and T
 ## TODOS
 
 - [ ] Lightweight BYOK Chat App
-  - [ ] Fonts (JetBrains Mono for codeblocks)
+  - [x] Fonts (JetBrains Mono for codeblocks)
   - [ ] Page: Start new Chat
   - [ ] Page: Individual Chat
   - [ ] Model picker
