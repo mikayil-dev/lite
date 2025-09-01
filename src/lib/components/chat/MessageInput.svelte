@@ -4,7 +4,7 @@
   import ArrowUp from '~icons/solar/arrow-up-linear';
 
   function onkeydown(
-    event: KeyboardEvent & { currentTarget: EventTarget & HTMLTextAreaElement },
+    event: KeyboardEvent & { currentTarget: HTMLTextAreaElement },
   ): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -13,7 +13,17 @@
 </script>
 
 <div class="message-input-container">
-  <textarea name="message" id="message" {onkeydown}></textarea>
+  <textarea
+    name="message"
+    id="message"
+    {onkeydown}
+    oninput={(e) => {
+      if (!e.target) return;
+      const target = e.target as HTMLTextAreaElement;
+      target.style.height = 'auto';
+      target.style.height = target.scrollHeight + 'px';
+    }}
+  ></textarea>
   <div class="toolbar">
     <IconButton>
       <SettingsIcon />
@@ -41,7 +51,21 @@
       resize: none;
       width: 100%;
       height: 100%;
+      max-height: 300px;
       scrollbar-width: thin;
+      scrollbar-color: var(--darkgray) transparent;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--gray);
+      }
     }
 
     .toolbar {

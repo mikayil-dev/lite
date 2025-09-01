@@ -23,6 +23,7 @@
     h2 {
       margin-bottom: 40px;
       margin-top: -1em;
+      font-weight: 100;
     }
 
     .message-input-wrapper {
