@@ -53,19 +53,6 @@
       height: 100%;
       max-height: 300px;
       scrollbar-width: thin;
-      scrollbar-color: var(--darkgray) transparent;
-
-      &::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: var(--gray);
-      }
     }
 
     .toolbar {
