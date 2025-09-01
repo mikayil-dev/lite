@@ -35,7 +35,6 @@
     }
 
     a {
-      @include copy-s;
       display: flex;
       align-items: center;
       padding: 10px 16px;

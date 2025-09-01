@@ -65,7 +65,7 @@
 @mixin copy {
   @include font-copy;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 400;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -73,7 +73,7 @@
 @mixin copy-s {
   @include font-copy;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 400;
   font-size: 0.875rem;
   line-height: 1.6;
 }
