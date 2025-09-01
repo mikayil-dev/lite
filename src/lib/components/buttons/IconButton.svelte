@@ -26,8 +26,8 @@
   button,
   .icon-btn {
     border-radius: 200px;
-    min-width: 32px;
-    min-height: 32px;
+    min-width: 33px;
+    min-height: 33px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,9 +37,18 @@
 
     &.primary {
       background-color: white;
+      border: 2px solid white;
 
       :global * {
         color: var(--darkgray);
+      }
+
+      @include hover {
+        background-color: transparent;
+
+        :global * {
+          color: white;
+        }
       }
     }
 
