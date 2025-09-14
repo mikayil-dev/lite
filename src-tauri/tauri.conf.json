@@ -12,7 +12,7 @@
 	"app": {
 		"windows": [
 			{
-				"title": "lite",
+				"title": "Lite",
 				"width": 800,
 				"height": 600
 			}
