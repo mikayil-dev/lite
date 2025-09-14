@@ -10,6 +10,7 @@ This template should help get you started developing with Tauri, SvelteKit and T
 
 - [ ] Lightweight BYOK Chat App
   - [x] Fonts (JetBrains Mono for codeblocks)
+  - [ ] Settings page for key etc.
   - [ ] Page: Start new Chat
   - [ ] Page: Individual Chat
   - [ ] Model picker

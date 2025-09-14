@@ -4,6 +4,7 @@ import tsparser from '@typescript-eslint/parser';
 import svelte from 'eslint-plugin-svelte';
 import svelteParser from 'svelte-eslint-parser';
 import prettierConfig from 'eslint-config-prettier';
+import globals from 'globals';
 
 /** @type {import('eslint').Linter.FlatConfig.FlatConfig} */
 export default [
@@ -25,7 +26,8 @@ export default [
   {
     languageOptions: {
       globals: {
-        URL: 'readonly',
+        ...globals.node,
+        ...globals.browser,
       },
     },
   },
