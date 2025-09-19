@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 
-export async function load() {
+export function load(): void {
   redirect(308, '/chat');
 }
