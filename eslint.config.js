@@ -110,7 +110,6 @@ export default [
             'object',
             'type',
           ],
-          'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
