@@ -19,33 +19,32 @@ export class Database {
   }
 
   /**
-   * Runs a SQL query and returns a single row of type T or undefined.
+   * Runs a SQL query and returns a single row as an object
    * @param query SQL query string
-   * @param params Query parameters
-   * @returns Promise resolving to a row of type T or undefined
+   * @param [params] Query parameters (optional)
+   * @returns Promise resolving to a row as an object
    */
-  async get<T = unknown>(
-    query: string,
-    params: unknown[],
-  ): Promise<T | undefined> {
+  async get(query: string, params?: unknown[]): Promise<object> {
     return new Promise((resolve, reject) => {
-      this.db.get(query, params, (err: Error | null, row: T) => {
+      this.db.get(query, params, (err: Error | null, row: object) => {
         if (err) return reject(err);
+        console.log(row);
         resolve(row);
       });
     });
   }
 
   /**
-   * Runs a SQL query and returns all rows as an array of type T.
+   * Runs a SQL query and returns all rows as an array objects.
    * @param query SQL query string
-   * @param params Query parameters
-   * @returns Promise resolving to an array of rows of type T
+   * @param [params] Query parameters (optional)
+   * @returns Promise resolving to an array of rows as objects
    */
-  async getAll<T = unknown>(query: string, params: unknown[]): Promise<T[]> {
+  async getAll(query: string, params?: unknown[]): Promise<object[]> {
     return new Promise((resolve, reject) => {
-      this.db.all(query, params, (err: Error | null, rows: T[]) => {
+      this.db.all(query, params, (err: Error | null, rows: object[]) => {
         if (err) return reject(err);
+        console.log(rows);
         resolve(rows);
       });
     });

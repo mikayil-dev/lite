@@ -1,3 +1,3 @@
 import { db } from 'lib/server/db/db';
 
-console.log(db.run('SELECT 1'));
+console.log(await db.getAll("SELECT 'DB initialized' AS message"));
