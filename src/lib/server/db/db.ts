@@ -28,7 +28,6 @@ export class Database {
     return new Promise((resolve, reject) => {
       this.db.get(query, params, (err: Error | null, row: object) => {
         if (err) return reject(err);
-        console.log(row);
         resolve(row);
       });
     });
@@ -44,7 +43,6 @@ export class Database {
     return new Promise((resolve, reject) => {
       this.db.all(query, params, (err: Error | null, rows: object[]) => {
         if (err) return reject(err);
-        console.log(rows);
         resolve(rows);
       });
     });
