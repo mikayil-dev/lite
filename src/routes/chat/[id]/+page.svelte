@@ -5,11 +5,13 @@
   import MessageInput from '$lib/components/chat/MessageInput.svelte';
   import Message from '$lib/components/chat/Message.svelte';
   import type { MessageRole, Model } from '$lib/server/providers';
+  import { message as tauriMessage } from '@tauri-apps/plugin-dialog';
 
   interface MessageData {
     id?: number;
     role: MessageRole;
     content: string;
+    tempId?: string; // Temporary ID for messages not yet saved
   }
 
   let messages = $state<MessageData[]>([]);
@@ -82,9 +84,11 @@
       const data = await response.json();
 
       if (data.messages) {
-        messages = data.messages.map((m: { role: MessageRole; content: string }) => ({
+        messages = data.messages.map((m: { id: number; role: MessageRole; content: string }) => ({
+          id: m.id,
           role: m.role,
           content: m.content,
+          tempId: undefined, // Clear temp IDs for saved messages
         }));
       } else {
         messages = [];
@@ -125,8 +129,9 @@
     streamingMessage = '';
     isStreaming = true;
 
-    // Add user message immediately
-    messages = [...messages, { role: 'user', content: message }];
+    // Add user message immediately with temporary ID
+    const userTempId = `temp-user-${Date.now()}`;
+    messages = [...messages, { role: 'user', content: message, tempId: userTempId }];
     scrollToBottom();
 
     try {
@@ -159,8 +164,9 @@
             if (line.startsWith('data: ')) {
               const data = line.slice(6);
               if (data === '[DONE]') {
-                // Add final assistant message
-                messages = [...messages, { role: 'assistant', content: streamingMessage }];
+                // Add final assistant message with temporary ID
+                const assistantTempId = `temp-assistant-${Date.now()}`;
+                messages = [...messages, { role: 'assistant', content: streamingMessage, tempId: assistantTempId }];
                 streamingMessage = '';
                 isStreaming = false;
                 continue;
@@ -179,9 +185,15 @@
           }
         }
       }
+
+      // Reload messages to get proper IDs from database
+      await loadMessages();
     } catch (error) {
       console.error('Failed to send message:', error);
-      alert('Failed to send message. Please check your provider configuration.');
+      await tauriMessage('Failed to send message. Please check your provider configuration.', {
+        title: 'Error',
+        kind: 'error',
+      });
     } finally {
       isLoading = false;
     }
@@ -193,6 +205,52 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
     }, 0);
+  }
+
+  async function handleDeleteMessage(messageId: number): Promise<void> {
+    try {
+      const response = await fetch(`/api/messages/${messageId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete message');
+      }
+
+      // Remove the message from the UI
+      messages = messages.filter(m => m.id !== messageId);
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      await tauriMessage('Failed to delete message. Please try again.', {
+        title: 'Error',
+        kind: 'error',
+      });
+    }
+  }
+
+  async function handleEditMessage(messageId: number, newContent: string): Promise<void> {
+    try {
+      const response = await fetch(`/api/messages/${messageId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newContent }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update message');
+      }
+
+      // Update the message in the UI
+      messages = messages.map(m =>
+        m.id === messageId ? { ...m, content: newContent } : m
+      );
+    } catch (error) {
+      console.error('Failed to update message:', error);
+      await tauriMessage('Failed to update message. Please try again.', {
+        title: 'Error',
+        kind: 'error',
+      });
+    }
   }
 </script>
 
@@ -240,8 +298,14 @@
 
 <section class="chat-page">
   <div class="messages-container" bind:this={messagesContainer}>
-    {#each messages as message}
-      <Message role={message.role} content={message.content} />
+    {#each messages as message (message.id ?? message.tempId)}
+      <Message
+        id={message.id}
+        role={message.role}
+        content={message.content}
+        onDelete={message.id ? handleDeleteMessage : undefined}
+        onEdit={message.id && message.role === 'user' ? handleEditMessage : undefined}
+      />
     {/each}
 
     {#if isStreaming && streamingMessage}
