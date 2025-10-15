@@ -93,6 +93,7 @@ export default [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/array-type': 'off',
 
       // Imports hygiene
       'import/first': 'error',
