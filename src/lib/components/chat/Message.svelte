@@ -2,14 +2,62 @@
   import { marked } from 'marked';
   import hljs from 'highlight.js';
   import type { MessageRole } from '$lib/server/providers';
+  import TrashIcon from '~icons/solar/trash-bin-trash-linear';
+  import EditIcon from '~icons/solar/pen-linear';
+  import CheckIcon from '~icons/solar/check-circle-linear';
+  import CloseIcon from '~icons/solar/close-circle-linear';
+  import { ask } from '@tauri-apps/plugin-dialog';
 
   interface Props {
+    id?: number;
     role: MessageRole;
     content: string;
     isStreaming?: boolean;
+    onDelete?: (id: number) => void;
+    onEdit?: (id: number, newContent: string) => void;
   }
 
-  let { role, content, isStreaming = false }: Props = $props();
+  let { id, role, content, isStreaming = false, onDelete, onEdit }: Props = $props();
+
+  let isEditing = $state(false);
+  let editedContent = $state(content);
+  let isDeleting = $state(false);
+
+  // Update editedContent when content changes
+  $effect(() => {
+    editedContent = content;
+  });
+
+  async function handleDelete() {
+    if (id && onDelete) {
+      isDeleting = true;
+      const confirmed = await ask('Are you sure you want to delete this message?', {
+        title: 'Delete Message',
+        kind: 'warning',
+      });
+      if (confirmed) {
+        onDelete(id);
+      }
+      isDeleting = false;
+    }
+  }
+
+  function handleEditStart() {
+    editedContent = content;
+    isEditing = true;
+  }
+
+  function handleEditSave() {
+    if (id && onEdit && editedContent.trim() !== content) {
+      onEdit(id, editedContent.trim());
+    }
+    isEditing = false;
+  }
+
+  function handleEditCancel() {
+    editedContent = content;
+    isEditing = false;
+  }
 
   // Custom renderer for code blocks with language labels
   const renderer = new marked.Renderer();
@@ -69,12 +117,76 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
 </svelte:head>
 
-<div class="message" class:user={role === 'user'} class:assistant={role === 'assistant'} class:system={role === 'system'}>
+<div
+  class="message"
+  class:user={role === 'user'}
+  class:assistant={role === 'assistant'}
+  class:system={role === 'system'}
+  class:editing={isEditing}
+  class:deleting={isDeleting}
+>
   <div class="message-header">
     <span class="role">{role === 'user' ? 'You' : role === 'assistant' ? 'Assistant' : 'System'}</span>
+    {#if id && !isStreaming}
+      <div class="message-actions">
+        {#if role === 'user' && onEdit}
+          {#if isEditing}
+            <button
+              class="action-btn save-btn"
+              onclick={handleEditSave}
+              title="Save"
+              aria-label="Save edited message"
+            >
+              <CheckIcon />
+            </button>
+            <button
+              class="action-btn cancel-btn"
+              onclick={handleEditCancel}
+              title="Cancel"
+              aria-label="Cancel editing"
+            >
+              <CloseIcon />
+            </button>
+          {:else}
+            <button
+              class="action-btn edit-btn"
+              onclick={handleEditStart}
+              title="Edit"
+              aria-label="Edit message"
+            >
+              <EditIcon />
+            </button>
+          {/if}
+        {/if}
+        {#if onDelete}
+          <button
+            class="action-btn delete-btn"
+            onclick={handleDelete}
+            title="Delete"
+            aria-label="Delete message"
+          >
+            <TrashIcon />
+          </button>
+        {/if}
+      </div>
+    {/if}
   </div>
   <div class="message-content">
-    {#if role === 'assistant'}
+    {#if isEditing}
+      <textarea
+        bind:value={editedContent}
+        class="edit-textarea"
+        rows="5"
+        aria-label="Edit message content"
+        onkeydown={(e) => {
+          if (e.key === 'Enter' && e.metaKey) {
+            handleEditSave();
+          } else if (e.key === 'Escape') {
+            handleEditCancel();
+          }
+        }}
+      ></textarea>
+    {:else if role === 'assistant'}
       {@html parsedContent}
     {:else}
       {content}
@@ -118,6 +230,7 @@
     .message-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
 
       .role {
@@ -128,9 +241,95 @@
       }
     }
 
+    .message-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+    }
+
+    &:hover .message-actions {
+      opacity: 1;
+    }
+
+    // Keep actions visible when editing or deleting
+    &.editing .message-actions,
+    &.deleting .message-actions {
+      opacity: 1;
+    }
+
+    // Ensure buttons are not clickable when invisible
+    .message-actions > button {
+      pointer-events: auto;
+    }
+
+    &:not(:hover):not(.editing):not(.deleting) .message-actions > button {
+      pointer-events: none;
+    }
+
+    .action-btn {
+      padding: 4px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: inherit;
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      &.edit-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      &.delete-btn:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      &.save-btn:hover {
+        border-color: #10b981;
+        color: #10b981;
+      }
+
+      &.cancel-btn:hover {
+        border-color: #f59e0b;
+        color: #f59e0b;
+      }
+    }
+
     .message-content {
       line-height: 1.6;
       word-wrap: break-word;
+
+      .edit-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 1px solid var(--primary);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: 1.6;
+        resize: vertical;
+
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+      }
 
       .cursor {
         animation: blink 1s infinite;
