@@ -5,16 +5,35 @@ import { nanoid } from 'nanoid';
 
 /**
  * GET /api/chats
- * Get all chats
+ * Get all chats with optional sorting
+ * Query params: sortBy=created_at|last_message (default: last_message)
  */
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ url }) => {
   try {
-    const chats = (await db.getAll(
-      'SELECT * FROM chats ORDER BY created_at DESC'
-    )) as Array<{
+    const sortBy = url.searchParams.get('sortBy') || 'last_message';
+
+    let query = `
+      SELECT
+        c.id,
+        c.title,
+        c.created_at,
+        COALESCE(MAX(m.created_at), c.created_at) as last_message_at
+      FROM chats c
+      LEFT JOIN messages m ON c.id = m.chat_id
+      GROUP BY c.id
+    `;
+
+    if (sortBy === 'created_at') {
+      query += ' ORDER BY c.created_at DESC';
+    } else {
+      query += ' ORDER BY last_message_at DESC';
+    }
+
+    const chats = (await db.getAll(query)) as Array<{
       id: string;
       title: string;
       created_at: string;
+      last_message_at: string;
     }>;
 
     return json({ chats });

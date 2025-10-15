@@ -56,3 +56,21 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
     );
   }
 };
+
+/**
+ * DELETE /api/chats/[id]
+ * Delete a chat (and all its messages via CASCADE)
+ */
+export const DELETE: RequestHandler = async ({ params }) => {
+  try {
+    await db.get('DELETE FROM chats WHERE id = ?', [params.id]);
+
+    return json({ message: 'Chat deleted successfully' });
+  } catch (error) {
+    console.error('Delete chat error:', error);
+    return json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    );
+  }
+};
