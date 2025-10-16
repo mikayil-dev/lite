@@ -221,29 +221,61 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 12px;
     border-radius: 12px;
     margin-bottom: 12px;
+
+    @media (min-width: 481px) {
+      padding: 14px;
+    }
+
+    @media (min-width: 769px) {
+      padding: 16px;
+    }
 
     &.user {
       background-color: var(--darkgray);
       margin-left: auto;
-      max-width: 80%;
+      max-width: 95%;
+
+      @media (min-width: 481px) {
+        max-width: 85%;
+      }
+
+      @media (min-width: 769px) {
+        max-width: 80%;
+      }
     }
 
     &.assistant {
       background-color: var(--contrast-bg);
       margin-right: auto;
-      max-width: 80%;
+      max-width: 95%;
+
+      @media (min-width: 481px) {
+        max-width: 85%;
+      }
+
+      @media (min-width: 769px) {
+        max-width: 80%;
+      }
     }
 
     &.system {
       background-color: var(--darkgray);
       opacity: 0.7;
       font-size: 0.9em;
-      max-width: 90%;
+      max-width: 100%;
       margin-left: auto;
       margin-right: auto;
+
+      @media (min-width: 481px) {
+        max-width: 95%;
+      }
+
+      @media (min-width: 769px) {
+        max-width: 90%;
+      }
     }
 
     .message-header {
@@ -400,13 +432,21 @@
 
       :global(.code-block-wrapper pre) {
         background: transparent !important;
-        padding: 12px !important;
+        padding: 8px !important;
         overflow-x: auto;
         margin: 0 !important;
         line-height: 1.5;
         border-radius: 0;
         scrollbar-width: thin;
         scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+        @media (min-width: 481px) {
+          padding: 10px !important;
+        }
+
+        @media (min-width: 769px) {
+          padding: 12px !important;
+        }
 
         &::-webkit-scrollbar {
           height: 8px;

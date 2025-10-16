@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { chatRefreshTrigger } from '$lib/stores/chatStore';
+  import { chatRefreshTrigger, sidebarOpen } from '$lib/stores/chatStore';
   import IconButton from './buttons/IconButton.svelte';
   import SettingsIcon from '~icons/solar/settings-linear';
   import TrashIcon from '~icons/solar/trash-bin-trash-linear';
@@ -191,7 +191,7 @@
   }
 </script>
 
-<aside>
+<aside class:open={$sidebarOpen}>
   <div class="action-container">
     <a href="/chat" class="new-chat">New Chat</a>
   </div>
@@ -309,10 +309,20 @@
     width: 250px;
     background-color: var(--contrast-bg);
     position: fixed;
-    left: 0;
+    left: -250px;
     top: var(--header-height);
     border-right: 1px solid var(--darkgray);
     height: calc(100% - var(--header-height));
+    transition: left 0.3s ease;
+    z-index: 100;
+
+    &.open {
+      left: 0;
+    }
+
+    @media (min-width: 769px) {
+      left: 0;
+    }
 
     .new-chat {
       background-color: var(--gray);
@@ -369,9 +379,35 @@
         }
 
         input[type='checkbox'] {
+          appearance: none;
+          -webkit-appearance: none;
+          width: 18px;
+          height: 18px;
+          border: 2px solid var(--darkgray);
+          border-radius: 4px;
           margin: 0;
           cursor: pointer;
           pointer-events: none;
+          background: transparent;
+          position: relative;
+          transition: all 0.2s ease;
+
+          &:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+
+            &::after {
+              content: '';
+              position: absolute;
+              left: 5px;
+              top: 2px;
+              width: 4px;
+              height: 8px;
+              border: solid white;
+              border-width: 0 2px 2px 0;
+              transform: rotate(45deg);
+            }
+          }
         }
       }
     }
@@ -447,8 +483,39 @@
           }
 
           input[type='checkbox'] {
-            margin-left: 8px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--darkgray);
+            border-radius: 4px;
+            margin: 0 0 0 8px;
             cursor: pointer;
+            background: transparent;
+            position: relative;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+
+            &:hover {
+              border-color: var(--gray);
+            }
+
+            &:checked {
+              background: var(--primary);
+              border-color: var(--primary);
+
+              &::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 2px;
+                width: 4px;
+                height: 8px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+              }
+            }
           }
 
           .chat-link {

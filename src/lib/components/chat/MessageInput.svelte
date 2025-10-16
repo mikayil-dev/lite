@@ -76,13 +76,23 @@
 
 <style lang="scss">
   .message-input-container {
-    border-radius: 24px;
+    border-radius: 20px;
     background-color: var(--darkgray);
     box-shadow: 0 4px 8px #00000011;
-    padding: 12px 16px 14px;
+    padding: 10px 12px 12px;
+
+    @media (min-width: 481px) {
+      border-radius: 22px;
+      padding: 11px 14px 13px;
+    }
+
+    @media (min-width: 769px) {
+      border-radius: 24px;
+      padding: 12px 16px 14px;
+    }
 
     textarea {
-      padding: 8px;
+      padding: 6px 8px;
       border-radius: 12px;
       appearance: none;
       background: transparent;
@@ -90,8 +100,20 @@
       resize: none;
       width: 100%;
       height: 100%;
-      max-height: 300px;
+      max-height: 200px;
       scrollbar-width: thin;
+      font-size: 15px;
+
+      @media (min-width: 481px) {
+        padding: 7px 8px;
+        max-height: 250px;
+        font-size: 16px;
+      }
+
+      @media (min-width: 769px) {
+        padding: 8px;
+        max-height: 300px;
+      }
     }
 
     .toolbar {

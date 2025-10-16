@@ -343,12 +343,17 @@
 <style lang="scss">
   .model-selector-bar {
     position: fixed;
-    left: 250px; // Width of sidebar
+    left: 0;
     right: 0;
     top: var(--header-height);
     z-index: 10;
     border-bottom: 1px solid var(--darkgray);
     background: var(--contrast-bg);
+    transition: left 0.3s ease;
+
+    @media (min-width: 769px) {
+      left: 250px; // Width of sidebar
+    }
 
     .bar-content {
       max-width: 900px;
@@ -356,13 +361,25 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 12px 20px;
+      gap: 12px;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+
+      @media (min-width: 481px) {
+        gap: 20px;
+        padding: 12px 20px;
+        flex-wrap: nowrap;
+      }
     }
 
     .title-section {
       flex: 1;
       min-width: 0;
+      width: 100%;
+
+      @media (min-width: 481px) {
+        width: auto;
+      }
 
       .chat-title-input {
         width: 100%;
@@ -370,10 +387,14 @@
         border: 1px solid transparent;
         border-radius: 6px;
         background: transparent;
-        font-size: 1.1em;
+        font-size: 1em;
         font-weight: 500;
         color: inherit;
         transition: all 0.2s ease;
+
+        @media (min-width: 481px) {
+          font-size: 1.1em;
+        }
 
         &:hover {
           background: var(--background);
@@ -397,32 +418,50 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 12px;
+      gap: 8px;
       flex-shrink: 0;
       flex-grow: 1;
+      width: 100%;
+
+      @media (min-width: 481px) {
+        gap: 12px;
+        width: auto;
+      }
 
       label {
-        font-size: 0.9em;
+        font-size: 0.85em;
         font-weight: 500;
         opacity: 0.9;
         white-space: nowrap;
+        display: none;
+
+        @media (min-width: 481px) {
+          display: block;
+          font-size: 0.9em;
+        }
       }
 
       input {
-        min-width: 200px;
+        min-width: 140px;
         max-width: 300px;
         width: 100%;
-        padding: 8px 12px;
+        padding: 8px 10px;
         border: 1px solid var(--darkgray);
         border-radius: 6px;
         background: var(--background);
-        font-size: 0.9em;
+        font-size: 0.85em;
         color: inherit;
         transition: all 0.2s ease;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 8px center;
         padding-right: 28px;
+
+        @media (min-width: 481px) {
+          min-width: 200px;
+          padding: 8px 12px;
+          font-size: 0.9em;
+        }
 
         &:focus {
           outline: none;
@@ -466,10 +505,18 @@
     .messages-container {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
+      padding: 12px;
       padding-bottom: 160px;
       scrollbar-width: none;
       -ms-overflow-style: none;
+
+      @media (min-width: 481px) {
+        padding: 16px;
+      }
+
+      @media (min-width: 769px) {
+        padding: 20px;
+      }
 
       &::-webkit-scrollbar {
         display: none;
@@ -480,13 +527,23 @@
       position: absolute;
       bottom: 0;
       width: 100%;
-      padding-bottom: 32px;
-      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-top: 16px;
       background: linear-gradient(
         to bottom,
         transparent 0%,
         var(--background) 40%
       );
+
+      @media (min-width: 481px) {
+        padding-bottom: 28px;
+        padding-top: 18px;
+      }
+
+      @media (min-width: 769px) {
+        padding-bottom: 32px;
+        padding-top: 20px;
+      }
     }
   }
 </style>
