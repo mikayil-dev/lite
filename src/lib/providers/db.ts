@@ -1,4 +1,4 @@
-import { db } from '../db/db';
+import { db } from '$lib/server/db/db';
 import type { ProviderConfig, ProviderType, ConfigValuesDb } from './types';
 
 /**
