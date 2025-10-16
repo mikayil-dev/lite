@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS chats (
   id TEXT PRIMARY KEY,
   title TEXT,
-  created_at TEXT
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  last_message_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- Provider configurations table

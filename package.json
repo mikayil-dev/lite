@@ -16,6 +16,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2.4.0",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-sql": "^2.3.0",
     "@types/node": "^24.0.10",
     "highlight.js": "^11.11.1",
     "marked": "^16.4.0",

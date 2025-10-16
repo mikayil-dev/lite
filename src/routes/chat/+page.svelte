@@ -3,8 +3,11 @@
   import { goto } from '$app/navigation';
   import MessageInput from '$lib/components/chat/MessageInput.svelte';
   import { triggerChatRefresh } from '$lib/stores/chatStore';
-  import { nanoid } from 'nanoid';
-  import type { Model } from '$lib/server/providers';
+  import type { Model } from '$lib/providers';
+  import { getPreferences } from '$lib/services/preferences';
+  import { getDefaultProvider } from '$lib/services/providers';
+  import { getModelsForProvider } from '$lib/services/llm';
+  import { createChat } from '$lib/services/chats';
 
   let isCreating = $state(false);
   let selectedModel = $state<string>('');
@@ -17,29 +20,28 @@
 
   async function loadPreferencesAndModels(): Promise<void> {
     try {
-      // Load user preferences
-      const prefsResponse = await fetch('/api/preferences');
-      const prefsData = await prefsResponse.json();
+      const prefsData = await getPreferences();
 
-      if (prefsData.preferences && prefsData.preferences.selectedProviderId) {
-        // Load models for the selected provider
+      if (prefsData && prefsData.selectedProviderId) {
         isLoadingModels = true;
-        const modelsResponse = await fetch(
-          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`,
-        );
-        const modelsData = await modelsResponse.json();
-        availableModels = modelsData.models || [];
+        const provider = await getDefaultProvider();
+        
+        if (provider) {
+          const models = await getModelsForProvider(provider);
+          availableModels = models || [];
 
-        // Set selected model from preferences or use first available
-        selectedModel =
-          prefsData.preferences.selectedModelId ||
-          (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
+          selectedModel =
+            prefsData.selectedModelId ||
+            (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
+        } else {
+          selectedModel = 'gpt-4o-mini';
+        }
       } else {
-        selectedModel = 'gpt-4o-mini'; // Fallback
+        selectedModel = 'gpt-4o-mini';
       }
     } catch (error) {
       console.error('Failed to load preferences and models:', error);
-      selectedModel = 'gpt-4o-mini'; // Fallback
+      selectedModel = 'gpt-4o-mini';
     } finally {
       isLoadingModels = false;
     }
@@ -51,24 +53,14 @@
     isCreating = true;
 
     try {
-      // Create a new chat
-      const chatId = nanoid();
-      const response = await fetch('/api/chats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: message.slice(0, 50), // Use first 50 chars as title
-        }),
-      });
+      const chatId = crypto.randomUUID();
+      const now = new Date().toISOString();
+      await createChat(chatId, message.slice(0, 50), now);
 
-      const data = await response.json();
-
-      // Trigger sidebar refresh
       triggerChatRefresh();
 
-      // Navigate to the new chat and send the message
       await goto(
-        `/chat/${data.id}?initialMessage=${encodeURIComponent(message)}&model=${encodeURIComponent(selectedModel)}`,
+        `/chat/${chatId}?initialMessage=${encodeURIComponent(message)}&model=${encodeURIComponent(selectedModel)}`,
       );
     } catch (error) {
       console.error('Failed to create chat:', error);

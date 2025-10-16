@@ -1,7 +1,7 @@
 <script lang="ts">
   import { marked } from 'marked';
   import hljs from 'highlight.js';
-  import type { MessageRole } from '$lib/server/providers';
+  import type { MessageRole } from '$lib/providers';
   import TrashIcon from '~icons/solar/trash-bin-trash-linear';
   import EditIcon from '~icons/solar/pen-linear';
   import CheckIcon from '~icons/solar/check-circle-linear';

@@ -4,8 +4,25 @@
   import { triggerChatRefresh } from '$lib/stores/chatStore';
   import MessageInput from '$lib/components/chat/MessageInput.svelte';
   import Message from '$lib/components/chat/Message.svelte';
-  import type { MessageRole, Model } from '$lib/server/providers';
+  import type { MessageRole, Model } from '$lib/providers';
   import { message as tauriMessage } from '@tauri-apps/plugin-dialog';
+  import ChevronUpIcon from '~icons/solar/alt-arrow-up-linear';
+  import ChevronDownIcon from '~icons/solar/alt-arrow-down-linear';
+  import {
+    getMessagesByChatId,
+    createMessage,
+    updateMessage,
+    deleteMessage,
+  } from '$lib/services/messages';
+  import {
+    getChatById,
+    updateChatTitle as updateChatTitleService,
+    updateChatLastMessage,
+    createChat,
+  } from '$lib/services/chats';
+  import { getPreferences } from '$lib/services/preferences';
+  import { getDefaultProvider } from '$lib/services/providers';
+  import { getModelsForProvider, createChatStream } from '$lib/services/llm';
 
   interface MessageData {
     id?: number;
@@ -23,6 +40,7 @@
   let availableModels = $state<Model[]>([]);
   let isLoadingModels = $state(false);
   let chatTitle = $state<string>('');
+  let isTopBarVisible = $state(true);
 
   const chatId = $derived($page.params.id);
 
@@ -51,23 +69,24 @@
 
   async function loadPreferencesAndModels(): Promise<void> {
     try {
-      // Load user preferences
-      const prefsResponse = await fetch('/api/preferences');
-      const prefsData = await prefsResponse.json();
+      const prefsData = await getPreferences();
 
-      if (prefsData.preferences && prefsData.preferences.selectedProviderId) {
-        // Load models for the selected provider
+      if (prefsData && prefsData.selectedProviderId) {
         isLoadingModels = true;
-        const modelsResponse = await fetch(
-          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`,
-        );
-        const modelsData = await modelsResponse.json();
-        availableModels = modelsData.models || [];
+        const provider = await getDefaultProvider();
 
-        // Set selected model from preferences or use first available
-        selectedModel =
-          prefsData.preferences.selectedModelId ||
-          (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
+        if (provider) {
+          const models = await getModelsForProvider(provider);
+          availableModels = models || [];
+
+          selectedModel =
+            prefsData.selectedModelId ||
+            (availableModels.length > 0
+              ? availableModels[0].id
+              : 'gpt-4o-mini');
+        } else {
+          selectedModel = 'gpt-4o-mini'; // Fallback
+        }
       } else {
         selectedModel = 'gpt-4o-mini'; // Fallback
       }
@@ -81,11 +100,10 @@
 
   async function loadMessages(): Promise<void> {
     try {
-      const response = await fetch(`/api/chat/${chatId}/messages`);
-      const data = await response.json();
+      const messagesList = await getMessagesByChatId(chatId);
 
-      if (data.messages) {
-        messages = data.messages.map(
+      if (messagesList) {
+        messages = messagesList.map(
           (m: { id: number; role: MessageRole; content: string }) => ({
             id: m.id,
             role: m.role,
@@ -98,9 +116,8 @@
       }
 
       // Also load chat title
-      const chatResponse = await fetch(`/api/chats/${chatId}`);
-      const chatData = await chatResponse.json();
-      chatTitle = chatData.title || 'Untitled Chat';
+      const chat = await getChatById(chatId);
+      chatTitle = chat?.title || 'Untitled Chat';
 
       scrollToBottom();
     } catch (error) {
@@ -112,11 +129,7 @@
 
   async function updateChatTitle(): Promise<void> {
     try {
-      await fetch(`/api/chats/${chatId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: chatTitle }),
-      });
+      await updateChatTitleService(chatId, chatTitle);
 
       // Trigger sidebar refresh to show updated title
       triggerChatRefresh();
@@ -141,75 +154,127 @@
     scrollToBottom();
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message,
-          chatId,
-          model: selectedModel,
-        }),
-      });
+      console.log('Starting message send...');
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
+      // Get the current provider
+      const provider = await getDefaultProvider();
+      console.log('Provider:', provider);
+
+      if (!provider) {
+        throw new Error('No default provider found');
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
+      // If chatId is 'new', create a new chat first
+      let actualChatId = chatId;
+      if (chatId === 'new') {
+        console.log('Creating new chat...');
+        const newChatId = crypto.randomUUID();
+        const now = new Date().toISOString();
+        await createChat(newChatId, 'New Chat', now);
+        actualChatId = newChatId;
+        console.log('New chat created:', actualChatId);
+        // Navigate to the new chat (update the URL)
+        window.history.replaceState({}, '', `/chat/${actualChatId}`);
+      }
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      // Save the user message
+      console.log('Saving user message...');
+      await createMessage(actualChatId, 'user', message);
+      console.log('User message saved');
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
+      // Build conversation history from messages
+      const conversationHistory = messages
+        .filter((m) => m.role !== 'system')
+        .map((m) => ({
+          role: m.role,
+          content: m.content,
+        }));
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') {
-                // Add final assistant message with temporary ID
-                const assistantTempId = `temp-assistant-${Date.now()}`;
-                messages = [
-                  ...messages,
-                  {
-                    role: 'assistant',
-                    content: streamingMessage,
-                    tempId: assistantTempId,
-                  },
-                ];
-                streamingMessage = '';
-                isStreaming = false;
-                continue;
-              }
+      // Add the current user message if not already in the list
+      if (
+        !conversationHistory.find(
+          (m) => m.content === message && m.role === 'user',
+        )
+      ) {
+        conversationHistory.push({ role: 'user', content: message });
+      }
 
-              try {
-                const parsed = JSON.parse(data);
-                if (parsed.delta) {
-                  streamingMessage += parsed.delta;
-                  scrollToBottom();
-                }
-              } catch {
-                // Skip invalid JSON
-              }
-            }
-          }
+      console.log('Conversation history:', conversationHistory);
+      console.log('Selected model:', selectedModel);
+
+      // Call the streaming API
+      console.log('Creating chat stream...');
+      const stream = createChatStream(provider, {
+        model: selectedModel,
+        messages: conversationHistory,
+        stream: true,
+      });
+
+      console.log('Stream created, iterating...');
+      // Iterate through stream chunks
+      for await (const chunk of stream) {
+        console.log('Received chunk:', chunk);
+        if (chunk.delta) {
+          streamingMessage += chunk.delta;
+          scrollToBottom();
         }
       }
 
+      console.log('Stream complete, saving assistant message...');
+      // Save the assistant message
+      await createMessage(
+        actualChatId,
+        'assistant',
+        streamingMessage,
+        selectedModel,
+        provider.id,
+      );
+
+      // Update chat's last_message_at
+      await updateChatLastMessage(actualChatId);
+
+      // Add final assistant message with temporary ID
+      const assistantTempId = `temp-assistant-${Date.now()}`;
+      messages = [
+        ...messages,
+        {
+          role: 'assistant',
+          content: streamingMessage,
+          tempId: assistantTempId,
+        },
+      ];
+      streamingMessage = '';
+      isStreaming = false;
+
+      console.log('Reloading messages...');
       // Reload messages to get proper IDs from database
       await loadMessages();
+      console.log('Message send complete!');
     } catch (error) {
       console.error('Failed to send message:', error);
-      await tauriMessage(
-        'Failed to send message. Please check your provider configuration.',
-        {
-          title: 'Error',
-          kind: 'error',
-        },
+      console.error('Error type:', typeof error);
+      console.error(
+        'Error details:',
+        error instanceof Error ? error.message : JSON.stringify(error),
       );
+      console.error(
+        'Error stack:',
+        error instanceof Error ? error.stack : 'No stack',
+      );
+
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
+      }
+
+      await tauriMessage(`Failed to send message: ${errorMessage}`, {
+        title: 'Error',
+        kind: 'error',
+      });
     } finally {
       isLoading = false;
     }
@@ -225,13 +290,7 @@
 
   async function handleDeleteMessage(messageId: number): Promise<void> {
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete message');
-      }
+      await deleteMessage(messageId);
 
       // Remove the message from the UI
       messages = messages.filter((m) => m.id !== messageId);
@@ -249,15 +308,7 @@
     newContent: string,
   ): Promise<void> {
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newContent }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update message');
-      }
+      await updateMessage(messageId, newContent);
 
       // Update the message in the UI
       messages = messages.map((m) =>
@@ -273,7 +324,18 @@
   }
 </script>
 
-<div class="model-selector-bar">
+<div class="model-selector-bar" class:collapsed={!isTopBarVisible}>
+  <button
+    class="toggle-bar-btn"
+    onclick={() => (isTopBarVisible = !isTopBarVisible)}
+    aria-label={isTopBarVisible ? 'Hide top bar' : 'Show top bar'}
+  >
+    {#if isTopBarVisible}
+      <ChevronUpIcon />
+    {:else}
+      <ChevronDownIcon />
+    {/if}
+  </button>
   <div class="bar-content">
     <div class="title-section">
       <input
@@ -349,10 +411,57 @@
     z-index: 10;
     border-bottom: 1px solid var(--darkgray);
     background: var(--contrast-bg);
-    transition: left 0.3s ease;
+    transition: all 0.3s ease;
 
     @media (min-width: 769px) {
       left: 250px; // Width of sidebar
+
+      .toggle-bar-btn {
+        display: none;
+      }
+    }
+
+    &.collapsed {
+      .bar-content {
+        max-height: 0;
+        overflow: hidden;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    .toggle-bar-btn {
+      position: absolute;
+      bottom: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48px;
+      height: 32px;
+      background: var(--contrast-bg);
+      border: 1px solid var(--darkgray);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      z-index: 11;
+
+      &:hover {
+        opacity: 1;
+        background: var(--background);
+      }
+
+      &:active {
+        transform: translateX(-50%) scale(0.95);
+      }
+
+      @media (min-width: 769px) {
+        display: none;
+      }
     }
 
     .bar-content {
@@ -361,13 +470,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px;
+      gap: 8px;
+      padding: 8px 16px;
       flex-wrap: wrap;
 
       @media (min-width: 481px) {
-        gap: 20px;
-        padding: 12px 20px;
+        gap: 16px;
+        padding: 8px 20px;
         flex-wrap: nowrap;
       }
     }
@@ -383,17 +492,17 @@
 
       .chat-title-input {
         width: 100%;
-        padding: 8px 12px;
+        padding: 6px 10px;
         border: 1px solid transparent;
         border-radius: 6px;
         background: transparent;
-        font-size: 1em;
+        font-size: 0.95em;
         font-weight: 500;
         color: inherit;
         transition: all 0.2s ease;
 
         @media (min-width: 481px) {
-          font-size: 1.1em;
+          font-size: 1em;
         }
 
         &:hover {
@@ -445,7 +554,7 @@
         min-width: 140px;
         max-width: 300px;
         width: 100%;
-        padding: 8px 10px;
+        padding: 6px 10px;
         border: 1px solid var(--darkgray);
         border-radius: 6px;
         background: var(--background);
@@ -459,7 +568,7 @@
 
         @media (min-width: 481px) {
           min-width: 200px;
-          padding: 8px 12px;
+          padding: 6px 12px;
           font-size: 0.9em;
         }
 
@@ -499,7 +608,7 @@
     flex-direction: column;
     height: calc(100vh - var(--header-height));
     height: calc(100dvh - var(--header-height));
-    padding-top: 56px; // Height of selector bar
+    padding-top: 49px; // Height of selector bar
     position: relative;
 
     .messages-container {
@@ -512,10 +621,12 @@
 
       @media (min-width: 481px) {
         padding: 16px;
+        padding-bottom: 160px;
       }
 
       @media (min-width: 769px) {
         padding: 20px;
+        padding-bottom: 160px;
       }
 
       &::-webkit-scrollbar {

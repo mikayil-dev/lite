@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { providerManager, ProviderDB } from '$lib/server/providers';
+import { providerManager, ProviderDB } from '$lib/providers/index';
 import type { RequestHandler } from './$types';
 
 /**

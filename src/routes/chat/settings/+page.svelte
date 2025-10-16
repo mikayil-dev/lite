@@ -1,17 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { ProviderType, Model } from '$lib/server/providers';
+  import type { ProviderType, Model } from '$lib/providers';
   import { ask, message as tauriMessage } from '@tauri-apps/plugin-dialog';
+  import {
+    getAllProviders,
+    createProvider,
+    setDefaultProvider,
+    deleteProvider,
+    type ProviderData,
+  } from '$lib/services/providers';
+  import {
+    getPreferences,
+    updatePreferences,
+  } from '$lib/services/preferences';
+  import { getModelsForProvider } from '$lib/services/llm';
 
-  interface Provider {
-    id: number;
-    name: string;
-    type: ProviderType;
-    apiKey: string;
-    isDefault?: boolean;
-  }
-
-  let providers = $state<Provider[]>([]);
+  let providers = $state<ProviderData[]>([]);
   let models = $state<Model[]>([]);
   let selectedProviderId = $state<number | null>(null);
   let selectedModel = $state<string>('gpt-4o-mini');
@@ -42,9 +46,7 @@
 
   async function loadProviders(): Promise<void> {
     try {
-      const response = await fetch('/api/providers');
-      const data = await response.json();
-      providers = data.providers;
+      providers = await getAllProviders();
     } catch (error) {
       console.error('Failed to load providers:', error);
     }
@@ -52,13 +54,12 @@
 
   async function loadPreferences(): Promise<void> {
     try {
-      const response = await fetch('/api/preferences');
-      const data = await response.json();
+      const prefs = await getPreferences();
 
-      if (data.preferences) {
+      if (prefs) {
         // Use saved preferences
-        selectedProviderId = data.preferences.selectedProviderId;
-        selectedModel = data.preferences.selectedModelId || 'gpt-4o-mini';
+        selectedProviderId = prefs.selectedProviderId;
+        selectedModel = prefs.selectedModelId || 'gpt-4o-mini';
       } else if (providers.length > 0) {
         // No saved preferences, use default provider or first one
         const defaultProvider = providers.find((p) => p.isDefault);
@@ -82,14 +83,7 @@
 
   async function savePreferences(): Promise<void> {
     try {
-      await fetch('/api/preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          selectedProviderId,
-          selectedModelId: selectedModel,
-        }),
-      });
+      await updatePreferences(selectedProviderId ?? undefined, selectedModel);
     } catch (error) {
       console.error('Failed to save preferences:', error);
     }
@@ -100,11 +94,10 @@
 
     isLoading = true;
     try {
-      const response = await fetch(
-        `/api/models?providerId=${selectedProviderId}`,
-      );
-      const data = await response.json();
-      models = data.models;
+      const provider = providers.find((p) => p.id === selectedProviderId);
+      if (provider) {
+        models = await getModelsForProvider(provider);
+      }
     } catch (error) {
       console.error('Failed to load models:', error);
     } finally {
@@ -121,19 +114,13 @@
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/providers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await createProvider(
+        {
           ...newProvider,
-          setAsDefault: (providers?.length ?? 0) === 0, // Set as default if it's the first one
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create provider');
-      }
+          apiKey: newProvider.apiKey,
+        },
+        providers.length === 0, // Set as default if it's the first one
+      );
 
       // Reset form
       newProvider = {
@@ -160,14 +147,7 @@
 
   async function handleSetDefault(providerId: number): Promise<void> {
     try {
-      const response = await fetch(`/api/providers/${providerId}/default`, {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to set default provider');
-      }
-
+      await setDefaultProvider(providerId);
       await loadProviders();
     } catch (error) {
       console.error('Failed to set default:', error);
@@ -186,13 +166,7 @@
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`/api/providers/${providerId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete provider');
-      }
+      await deleteProvider(providerId);
 
       if (selectedProviderId === providerId) {
         selectedProviderId = null;
@@ -228,14 +202,19 @@
               <h3>{provider.name}</h3>
               <p class="provider-type">{provider.type}</p>
               <p class="provider-key">API Key: {provider.apiKey}</p>
+              {#if provider.isDefault}
+                <span class="default-badge">Default</span>
+              {/if}
             </div>
             <div class="provider-actions">
-              <button
-                class="btn-secondary"
-                onclick={() => handleSetDefault(provider.id)}
-              >
-                Set Default
-              </button>
+              {#if !provider.isDefault}
+                <button
+                  class="btn-secondary"
+                  onclick={() => handleSetDefault(provider.id)}
+                >
+                  Set Default
+                </button>
+              {/if}
               <button
                 class="btn-danger"
                 onclick={() => handleDeleteProvider(provider.id)}
@@ -436,6 +415,18 @@
           font-size: 0.85em;
           opacity: 0.6;
           font-family: monospace;
+        }
+
+        .default-badge {
+          display: inline-block;
+          margin-top: 8px;
+          padding: 4px 12px;
+          background: var(--primary);
+          color: white;
+          border-radius: 12px;
+          font-size: 0.75em;
+          font-weight: 600;
+          text-transform: uppercase;
         }
       }
 

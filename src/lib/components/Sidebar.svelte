@@ -8,13 +8,7 @@
   import TrashIcon from '~icons/solar/trash-bin-trash-linear';
   import SortIcon from '~icons/solar/sort-linear';
   import { ask, message as tauriMessage } from '@tauri-apps/plugin-dialog';
-
-  interface Chat {
-    id: string;
-    title: string;
-    created_at: string;
-    last_message_at: string;
-  }
+  import { getAllChats, deleteChat, type Chat } from '$lib/services/chats';
 
   interface GroupedChats {
     label: string;
@@ -41,9 +35,7 @@
 
   async function loadChats(): Promise<void> {
     try {
-      const response = await fetch(`/api/chats?sortBy=${sortBy}`);
-      const data = await response.json();
-      chats = data.chats;
+      chats = await getAllChats(sortBy);
     } catch (error) {
       console.error('Failed to load chats:', error);
     } finally {
@@ -121,7 +113,7 @@
     await loadChats();
   }
 
-  async function deleteChat(chatId: string) {
+  async function deleteChatHandler(chatId: string) {
     const confirmed = await ask('Are you sure you want to delete this chat?', {
       title: 'Delete Chat',
       kind: 'warning',
@@ -130,13 +122,7 @@
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`/api/chats/${chatId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete chat');
-      }
+      await deleteChat(chatId);
 
       // If we're currently viewing this chat, redirect to home
       if (currentChatId === chatId) {
@@ -168,7 +154,7 @@
 
     try {
       const deletePromises = Array.from(selectedChatIds).map((chatId) =>
-        fetch(`/api/chats/${chatId}`, { method: 'DELETE' }),
+        deleteChat(chatId),
       );
 
       await Promise.all(deletePromises);
@@ -193,7 +179,9 @@
 
 <aside class:open={$sidebarOpen}>
   <div class="action-container">
-    <a href="/chat" class="new-chat">New Chat</a>
+    <a href="/chat" class="new-chat" onclick={() => ($sidebarOpen = false)}
+      >New Chat</a
+    >
   </div>
 
   <div class="toolbar">
@@ -274,13 +262,14 @@
                 class="chat-link"
                 class:active={currentChatId === chat.id}
                 href="/chat/{chat.id}"
+                onclick={() => ($sidebarOpen = false)}
               >
                 {chat.title}
               </a>
               {#if !isSelectionMode}
                 <button
                   class="delete-chat-btn"
-                  onclick={() => deleteChat(chat.id)}
+                  onclick={() => deleteChatHandler(chat.id)}
                   title="Delete chat"
                   aria-label="Delete chat"
                 >
