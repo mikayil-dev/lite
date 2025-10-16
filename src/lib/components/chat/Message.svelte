@@ -17,7 +17,14 @@
     onEdit?: (id: number, newContent: string) => void;
   }
 
-  let { id, role, content, isStreaming = false, onDelete, onEdit }: Props = $props();
+  let {
+    id,
+    role,
+    content,
+    isStreaming = false,
+    onDelete,
+    onEdit,
+  }: Props = $props();
 
   let isEditing = $state(false);
   let editedContent = $state(content);
@@ -31,10 +38,13 @@
   async function handleDelete() {
     if (id && onDelete) {
       isDeleting = true;
-      const confirmed = await ask('Are you sure you want to delete this message?', {
-        title: 'Delete Message',
-        kind: 'warning',
-      });
+      const confirmed = await ask(
+        'Are you sure you want to delete this message?',
+        {
+          title: 'Delete Message',
+          kind: 'warning',
+        },
+      );
       if (confirmed) {
         onDelete(id);
       }
@@ -62,7 +72,7 @@
   // Custom renderer for code blocks with language labels
   const renderer = new marked.Renderer();
 
-  renderer.code = function({ text, lang }: { text: string; lang?: string }) {
+  renderer.code = function ({ text, lang }: { text: string; lang?: string }) {
     const language = lang || 'text';
     const langLabel = language.charAt(0).toUpperCase() + language.slice(1);
 
@@ -114,7 +124,10 @@
 </script>
 
 <svelte:head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+  />
 </svelte:head>
 
 <div
@@ -126,7 +139,13 @@
   class:deleting={isDeleting}
 >
   <div class="message-header">
-    <span class="role">{role === 'user' ? 'You' : role === 'assistant' ? 'Assistant' : 'System'}</span>
+    <span class="role"
+      >{role === 'user'
+        ? 'You'
+        : role === 'assistant'
+          ? 'Assistant'
+          : 'System'}</span
+    >
     {#if id && !isStreaming}
       <div class="message-actions">
         {#if role === 'user' && onEdit}
@@ -435,7 +454,8 @@
         }
       }
 
-      :global(ul), :global(ol) {
+      :global(ul),
+      :global(ol) {
         margin: 0.5em 0;
         padding-left: 1.5em;
       }
@@ -460,7 +480,12 @@
         }
       }
 
-      :global(h1), :global(h2), :global(h3), :global(h4), :global(h5), :global(h6) {
+      :global(h1),
+      :global(h2),
+      :global(h3),
+      :global(h4),
+      :global(h5),
+      :global(h6) {
         margin: 1em 0 0.5em 0;
         font-weight: 600;
 
@@ -469,9 +494,15 @@
         }
       }
 
-      :global(h1) { font-size: 1.5em; }
-      :global(h2) { font-size: 1.3em; }
-      :global(h3) { font-size: 1.1em; }
+      :global(h1) {
+        font-size: 1.5em;
+      }
+      :global(h2) {
+        font-size: 1.3em;
+      }
+      :global(h3) {
+        font-size: 1.1em;
+      }
 
       :global(table) {
         border-collapse: collapse;
@@ -479,7 +510,8 @@
         margin: 1em 0;
       }
 
-      :global(th), :global(td) {
+      :global(th),
+      :global(td) {
         border: 1px solid var(--darkgray);
         padding: 8px 12px;
         text-align: left;
@@ -507,10 +539,12 @@
   }
 
   @keyframes blink {
-    0%, 50% {
+    0%,
+    50% {
       opacity: 1;
     }
-    51%, 100% {
+    51%,
+    100% {
       opacity: 0;
     }
   }

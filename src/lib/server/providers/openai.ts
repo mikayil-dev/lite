@@ -111,23 +111,20 @@ export class OpenAIProvider extends BaseProvider {
   async createChatCompletion(
     request: ChatCompletionRequest,
   ): Promise<ChatCompletionResponse> {
-    const response = await this.fetch(
-      `${this.getBaseUrl()}/chat/completions`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          model: request.model,
-          messages: request.messages,
-          temperature: request.temperature,
-          max_tokens: request.max_tokens,
-          top_p: request.top_p,
-          frequency_penalty: request.frequency_penalty,
-          presence_penalty: request.presence_penalty,
-          stop: request.stop,
-          stream: false,
-        }),
-      },
-    );
+    const response = await this.fetch(`${this.getBaseUrl()}/chat/completions`, {
+      method: 'POST',
+      body: JSON.stringify({
+        model: request.model,
+        messages: request.messages,
+        temperature: request.temperature,
+        max_tokens: request.max_tokens,
+        top_p: request.top_p,
+        frequency_penalty: request.frequency_penalty,
+        presence_penalty: request.presence_penalty,
+        stop: request.stop,
+        stream: false,
+      }),
+    });
 
     const data = (await response.json()) as {
       id: string;
@@ -159,23 +156,20 @@ export class OpenAIProvider extends BaseProvider {
   async *createChatCompletionStream(
     request: ChatCompletionRequest,
   ): AsyncGenerator<StreamChunk> {
-    const response = await this.fetch(
-      `${this.getBaseUrl()}/chat/completions`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          model: request.model,
-          messages: request.messages,
-          temperature: request.temperature,
-          max_tokens: request.max_tokens,
-          top_p: request.top_p,
-          frequency_penalty: request.frequency_penalty,
-          presence_penalty: request.presence_penalty,
-          stop: request.stop,
-          stream: true,
-        }),
-      },
-    );
+    const response = await this.fetch(`${this.getBaseUrl()}/chat/completions`, {
+      method: 'POST',
+      body: JSON.stringify({
+        model: request.model,
+        messages: request.messages,
+        temperature: request.temperature,
+        max_tokens: request.max_tokens,
+        top_p: request.top_p,
+        frequency_penalty: request.frequency_penalty,
+        presence_penalty: request.presence_penalty,
+        stop: request.stop,
+        stream: true,
+      }),
+    });
 
     for await (const line of this.parseSSEStream(response)) {
       try {

@@ -70,7 +70,8 @@
     ];
 
     for (const chat of chats) {
-      const dateToCompare = sortBy === 'last_message' ? chat.last_message_at : chat.created_at;
+      const dateToCompare =
+        sortBy === 'last_message' ? chat.last_message_at : chat.created_at;
       const chatDate = new Date(dateToCompare);
 
       if (chatDate >= today) {
@@ -86,7 +87,7 @@
       }
     }
 
-    return groups.filter(group => group.chats.length > 0);
+    return groups.filter((group) => group.chats.length > 0);
   }
 
   const groupedChats = $derived(groupChatsByDate(chats));
@@ -104,7 +105,7 @@
     if (selectedChatIds.size === chats.length) {
       selectedChatIds.clear();
     } else {
-      selectedChatIds = new Set(chats.map(c => c.id));
+      selectedChatIds = new Set(chats.map((c) => c.id));
     }
   }
 
@@ -160,14 +161,14 @@
       {
         title: 'Delete Chats',
         kind: 'warning',
-      }
+      },
     );
 
     if (!confirmed) return;
 
     try {
-      const deletePromises = Array.from(selectedChatIds).map(chatId =>
-        fetch(`/api/chats/${chatId}`, { method: 'DELETE' })
+      const deletePromises = Array.from(selectedChatIds).map((chatId) =>
+        fetch(`/api/chats/${chatId}`, { method: 'DELETE' }),
       );
 
       await Promise.all(deletePromises);
@@ -210,7 +211,9 @@
     <button
       class="toolbar-btn"
       onclick={toggleSortBy}
-      title={sortBy === 'last_message' ? 'Sort by creation date' : 'Sort by last message'}
+      title={sortBy === 'last_message'
+        ? 'Sort by creation date'
+        : 'Sort by last message'}
       aria-label="Toggle sort order"
     >
       <SortIcon />
@@ -221,8 +224,12 @@
       <button
         class="toolbar-btn"
         onclick={toggleSelectAll}
-        title={selectedChatIds.size === chats.length ? 'Deselect all' : 'Select all'}
-        aria-label={selectedChatIds.size === chats.length ? 'Deselect all' : 'Select all'}
+        title={selectedChatIds.size === chats.length
+          ? 'Deselect all'
+          : 'Select all'}
+        aria-label={selectedChatIds.size === chats.length
+          ? 'Deselect all'
+          : 'Select all'}
       >
         {selectedChatIds.size === chats.length ? 'None' : 'All'}
       </button>
@@ -251,7 +258,10 @@
         <div class="chat-group">
           <h3 class="group-label">{group.label}</h3>
           {#each group.chats as chat (chat.id)}
-            <div class="chat-item" class:selected={selectedChatIds.has(chat.id)}>
+            <div
+              class="chat-item"
+              class:selected={selectedChatIds.has(chat.id)}
+            >
               {#if isSelectionMode}
                 <input
                   type="checkbox"
@@ -358,7 +368,7 @@
           }
         }
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
           margin: 0;
           cursor: pointer;
           pointer-events: none;
@@ -436,7 +446,7 @@
             }
           }
 
-          input[type="checkbox"] {
+          input[type='checkbox'] {
             margin-left: 8px;
             cursor: pointer;
           }

@@ -108,7 +108,9 @@ export class ProviderDB {
    */
   static async getById(
     id: number,
-  ): Promise<(ProviderConfig & { id: number; name: string; isDefault: boolean }) | null> {
+  ): Promise<
+    (ProviderConfig & { id: number; name: string; isDefault: boolean }) | null
+  > {
     const row = (await db.get('SELECT * FROM provider_configs WHERE id = ?', [
       id,
     ])) as ProviderConfigRow | undefined;
@@ -353,7 +355,12 @@ export class ProviderDB {
          selected_provider_id = ?,
          selected_model_id = ?,
          updated_at = datetime('now')`,
-      [selectedProviderId, selectedModelId, selectedProviderId, selectedModelId],
+      [
+        selectedProviderId,
+        selectedModelId,
+        selectedProviderId,
+        selectedModelId,
+      ],
     );
   }
 }

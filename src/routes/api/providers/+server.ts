@@ -21,8 +21,10 @@ export const GET: RequestHandler = async () => {
   } catch (error) {
     console.error('Get providers error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -34,15 +36,30 @@ export const GET: RequestHandler = async () => {
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const body = await request.json();
-    console.log('Received provider creation request:', { ...body, apiKey: '[REDACTED]' });
+    console.log('Received provider creation request:', {
+      ...body,
+      apiKey: '[REDACTED]',
+    });
 
-    const { name, type, apiKey, baseUrl, organization, customHeaders, setAsDefault } = body;
+    const {
+      name,
+      type,
+      apiKey,
+      baseUrl,
+      organization,
+      customHeaders,
+      setAsDefault,
+    } = body;
 
     if (!name || !type || !apiKey) {
-      console.error('Missing required fields:', { name: !!name, type: !!type, apiKey: !!apiKey });
+      console.error('Missing required fields:', {
+        name: !!name,
+        type: !!type,
+        apiKey: !!apiKey,
+      });
       return json(
         { error: 'Name, type, and apiKey are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
       baseUrl,
       organization,
       hasCustomHeaders: !!customHeaders,
-      setAsDefault
+      setAsDefault,
     });
 
     const id = await ProviderDB.create(
@@ -64,17 +81,22 @@ export const POST: RequestHandler = async ({ request }) => {
         organization,
         customHeaders,
       },
-      setAsDefault
+      setAsDefault,
     );
 
     console.log('Provider created successfully with ID:', id);
     return json({ id, message: 'Provider created successfully' });
   } catch (error) {
     console.error('Create provider error:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error(
+      'Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace',
+    );
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

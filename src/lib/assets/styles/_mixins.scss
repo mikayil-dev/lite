@@ -45,16 +45,34 @@
 
 // Fonts and typography
 @mixin font-copy {
-  font-family: 'FigTree', ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family:
+    'FigTree',
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Noto Sans',
+    'Helvetica Neue',
+    Arial,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol';
   color: var(--text);
 }
 
 @mixin font-heading {
-  font-family: 'FigTree', ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family:
+    'FigTree',
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Noto Sans',
+    'Helvetica Neue',
+    Arial,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol';
   color: var(--text);
 }
 

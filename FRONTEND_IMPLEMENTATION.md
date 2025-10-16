@@ -73,23 +73,27 @@ A complete functional chat application built with SvelteKit, integrating the pro
 ## Features
 
 ### Chat Features
+
 - **Real-time Streaming**: Messages stream in word-by-word
 - **Message History**: All messages saved to database
 - **Auto-scrolling**: Automatically scrolls to new messages
 - **Provider Agnostic**: Works with any configured provider
 
 ### Provider Management
+
 - **Multiple Providers**: Support for OpenAI, Anthropic, OpenRouter, and custom providers
 - **API Key Management**: Secure storage and sanitized display
 - **Default Provider**: Set a default for new chats
 - **Provider-specific Options**: Organization ID for OpenAI, custom headers, etc.
 
 ### Model Selection
+
 - **Dynamic Model Lists**: Fetches available models from provider
 - **Pricing Information**: Displays token pricing
 - **Model Caching**: 1-hour cache for model lists
 
 ### UI/UX
+
 - **Modern Design**: Clean, minimal interface
 - **Responsive Layout**: Works on all screen sizes
 - **Loading States**: Clear feedback during operations
@@ -240,18 +244,22 @@ data: [DONE]
 ## Troubleshooting
 
 ### No Provider Configured
+
 **Error**: "No provider configuration found"
 **Solution**: Go to Settings and add a provider with valid API key
 
 ### Messages Not Loading
+
 **Problem**: Chat page shows empty
 **Solution**: Check browser console for errors, verify database initialized
 
 ### Streaming Not Working
+
 **Problem**: Messages appear all at once
 **Solution**: Check server logs, verify SSE headers in network tab
 
 ### Models Not Loading
+
 **Problem**: Empty model dropdown
 **Solution**: Check provider API key, verify internet connection
 

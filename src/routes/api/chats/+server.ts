@@ -40,8 +40,10 @@ export const GET: RequestHandler = async ({ url }) => {
   } catch (error) {
     console.error('Get chats error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -57,17 +59,20 @@ export const POST: RequestHandler = async ({ request }) => {
     const id = nanoid();
     const now = new Date().toISOString();
 
-    await db.get(
-      'INSERT INTO chats (id, title, created_at) VALUES (?, ?, ?)',
-      [id, title || 'New Chat', now]
-    );
+    await db.get('INSERT INTO chats (id, title, created_at) VALUES (?, ?, ?)', [
+      id,
+      title || 'New Chat',
+      now,
+    ]);
 
     return json({ id, title: title || 'New Chat', created_at: now });
   } catch (error) {
     console.error('Create chat error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

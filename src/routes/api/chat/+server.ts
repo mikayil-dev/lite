@@ -11,7 +11,10 @@ export const POST: RequestHandler = async ({ request }) => {
     const { message, chatId, providerId, model } = await request.json();
 
     if (!message || !chatId) {
-      return json({ error: 'Message and chatId are required' }, { status: 400 });
+      return json(
+        { error: 'Message and chatId are required' },
+        { status: 400 },
+      );
     }
 
     // Get provider config
@@ -24,8 +27,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
     if (!providerConfig) {
       return json(
-        { error: 'No provider configuration found. Please configure a provider in settings.' },
-        { status: 400 }
+        {
+          error:
+            'No provider configuration found. Please configure a provider in settings.',
+        },
+        { status: 400 },
       );
     }
 
@@ -63,7 +69,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
             // Send chunk to client
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ delta: chunk.delta, finishReason: chunk.finishReason })}\n\n`)
+              encoder.encode(
+                `data: ${JSON.stringify({ delta: chunk.delta, finishReason: chunk.finishReason })}\n\n`,
+              ),
             );
           }
 
@@ -80,7 +88,7 @@ export const POST: RequestHandler = async ({ request }) => {
           await ProviderDB.updateModelPreference(
             providerConfig!.id,
             model || 'gpt-4o-mini',
-            model || 'gpt-4o-mini'
+            model || 'gpt-4o-mini',
           );
 
           // Send done signal
@@ -96,14 +104,16 @@ export const POST: RequestHandler = async ({ request }) => {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     });
   } catch (error) {
     console.error('Chat API error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

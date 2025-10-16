@@ -86,8 +86,8 @@ const response = await providerManager.createChatCompletion(
   { type: 'openai', apiKey: 'sk-...' },
   {
     model: 'gpt-4o',
-    messages: [{ role: 'user', content: 'Hello!' }]
-  }
+    messages: [{ role: 'user', content: 'Hello!' }],
+  },
 );
 ```
 
@@ -97,11 +97,14 @@ const response = await providerManager.createChatCompletion(
 import { ProviderDB, providerManager } from '$lib/server/providers';
 
 // Store configuration
-const providerId = await ProviderDB.create({
-  name: 'My OpenAI',
-  type: 'openai',
-  apiKey: 'sk-...'
-}, true);
+const providerId = await ProviderDB.create(
+  {
+    name: 'My OpenAI',
+    type: 'openai',
+    apiKey: 'sk-...',
+  },
+  true,
+);
 
 // Use stored configuration
 const config = await ProviderDB.getDefault();
@@ -131,12 +134,12 @@ for await (const chunk of stream) {
 
 ## Supported Providers
 
-| Provider | Chat | Completion | Streaming | Models API |
-|----------|------|------------|-----------|------------|
-| OpenAI | ✅ | ✅ | ✅ | ✅ |
-| Anthropic | ✅ | ❌ | ✅ | Static |
-| OpenRouter | ✅ | ✅ | ✅ | ✅ |
-| Custom | ✅ | ✅ | ✅ | ✅ |
+| Provider   | Chat | Completion | Streaming | Models API |
+| ---------- | ---- | ---------- | --------- | ---------- |
+| OpenAI     | ✅   | ✅         | ✅        | ✅         |
+| Anthropic  | ✅   | ❌         | ✅        | Static     |
+| OpenRouter | ✅   | ✅         | ✅        | ✅         |
+| Custom     | ✅   | ✅         | ✅        | ✅         |
 
 ## Architecture
 
@@ -194,6 +197,7 @@ src/lib/server/providers/
 ## Next Steps
 
 1. **Set up environment variables**:
+
    ```env
    OPENAI_API_KEY=sk-...
    ANTHROPIC_API_KEY=sk-ant-...
@@ -231,9 +235,9 @@ export const POST: RequestHandler = async ({ request }) => {
   const response = await providerManager.createChatCompletion(config, {
     model: 'gpt-4o',
     messages: [
-      ...history.map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: message }
-    ]
+      ...history.map((m) => ({ role: m.role, content: m.content })),
+      { role: 'user', content: message },
+    ],
   });
 
   await ProviderDB.saveMessage({

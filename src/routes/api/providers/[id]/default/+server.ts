@@ -20,8 +20,10 @@ export const POST: RequestHandler = async ({ params }) => {
   } catch (error) {
     console.error('Set default provider error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

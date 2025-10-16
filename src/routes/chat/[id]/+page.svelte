@@ -59,14 +59,15 @@
         // Load models for the selected provider
         isLoadingModels = true;
         const modelsResponse = await fetch(
-          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`
+          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`,
         );
         const modelsData = await modelsResponse.json();
         availableModels = modelsData.models || [];
 
         // Set selected model from preferences or use first available
-        selectedModel = prefsData.preferences.selectedModelId ||
-                       (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
+        selectedModel =
+          prefsData.preferences.selectedModelId ||
+          (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
       } else {
         selectedModel = 'gpt-4o-mini'; // Fallback
       }
@@ -84,12 +85,14 @@
       const data = await response.json();
 
       if (data.messages) {
-        messages = data.messages.map((m: { id: number; role: MessageRole; content: string }) => ({
-          id: m.id,
-          role: m.role,
-          content: m.content,
-          tempId: undefined, // Clear temp IDs for saved messages
-        }));
+        messages = data.messages.map(
+          (m: { id: number; role: MessageRole; content: string }) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            tempId: undefined, // Clear temp IDs for saved messages
+          }),
+        );
       } else {
         messages = [];
       }
@@ -131,7 +134,10 @@
 
     // Add user message immediately with temporary ID
     const userTempId = `temp-user-${Date.now()}`;
-    messages = [...messages, { role: 'user', content: message, tempId: userTempId }];
+    messages = [
+      ...messages,
+      { role: 'user', content: message, tempId: userTempId },
+    ];
     scrollToBottom();
 
     try {
@@ -166,7 +172,14 @@
               if (data === '[DONE]') {
                 // Add final assistant message with temporary ID
                 const assistantTempId = `temp-assistant-${Date.now()}`;
-                messages = [...messages, { role: 'assistant', content: streamingMessage, tempId: assistantTempId }];
+                messages = [
+                  ...messages,
+                  {
+                    role: 'assistant',
+                    content: streamingMessage,
+                    tempId: assistantTempId,
+                  },
+                ];
                 streamingMessage = '';
                 isStreaming = false;
                 continue;
@@ -190,10 +203,13 @@
       await loadMessages();
     } catch (error) {
       console.error('Failed to send message:', error);
-      await tauriMessage('Failed to send message. Please check your provider configuration.', {
-        title: 'Error',
-        kind: 'error',
-      });
+      await tauriMessage(
+        'Failed to send message. Please check your provider configuration.',
+        {
+          title: 'Error',
+          kind: 'error',
+        },
+      );
     } finally {
       isLoading = false;
     }
@@ -218,7 +234,7 @@
       }
 
       // Remove the message from the UI
-      messages = messages.filter(m => m.id !== messageId);
+      messages = messages.filter((m) => m.id !== messageId);
     } catch (error) {
       console.error('Failed to delete message:', error);
       await tauriMessage('Failed to delete message. Please try again.', {
@@ -228,7 +244,10 @@
     }
   }
 
-  async function handleEditMessage(messageId: number, newContent: string): Promise<void> {
+  async function handleEditMessage(
+    messageId: number,
+    newContent: string,
+  ): Promise<void> {
     try {
       const response = await fetch(`/api/messages/${messageId}`, {
         method: 'PATCH',
@@ -241,8 +260,8 @@
       }
 
       // Update the message in the UI
-      messages = messages.map(m =>
-        m.id === messageId ? { ...m, content: newContent } : m
+      messages = messages.map((m) =>
+        m.id === messageId ? { ...m, content: newContent } : m,
       );
     } catch (error) {
       console.error('Failed to update message:', error);
@@ -284,7 +303,8 @@
             <option value={model.id}>
               {model.name}
               {#if model.pricing}
-                - ${model.pricing.promptTokens}/1M input, ${model.pricing.completionTokens}/1M output
+                - ${model.pricing.promptTokens}/1M input, ${model.pricing
+                  .completionTokens}/1M output
               {/if}
             </option>
           {/each}
@@ -304,7 +324,9 @@
         role={message.role}
         content={message.content}
         onDelete={message.id ? handleDeleteMessage : undefined}
-        onEdit={message.id && message.role === 'user' ? handleEditMessage : undefined}
+        onEdit={message.id && message.role === 'user'
+          ? handleEditMessage
+          : undefined}
       />
     {/each}
 

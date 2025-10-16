@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { ProviderType, Model } from '$lib/server/providers';
+  import { ask, message as tauriMessage } from '@tauri-apps/plugin-dialog';
 
   interface Provider {
     id: number;
@@ -61,7 +62,9 @@
       } else if (providers.length > 0) {
         // No saved preferences, use default provider or first one
         const defaultProvider = providers.find((p) => p.isDefault);
-        selectedProviderId = defaultProvider ? defaultProvider.id : providers[0].id;
+        selectedProviderId = defaultProvider
+          ? defaultProvider.id
+          : providers[0].id;
       }
 
       // Load models for selected provider
@@ -97,7 +100,9 @@
 
     isLoading = true;
     try {
-      const response = await fetch(`/api/models?providerId=${selectedProviderId}`);
+      const response = await fetch(
+        `/api/models?providerId=${selectedProviderId}`,
+      );
       const data = await response.json();
       models = data.models;
     } catch (error) {
@@ -143,7 +148,13 @@
       await loadProviders();
     } catch (error) {
       console.error('Failed to add provider:', error);
-      alert(`Failed to add provider: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      await tauriMessage(
+        `Failed to add provider: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
+          title: 'Error',
+          kind: 'error',
+        },
+      );
     }
   }
 
@@ -164,7 +175,15 @@
   }
 
   async function handleDeleteProvider(providerId: number): Promise<void> {
-    if (!confirm('Are you sure you want to delete this provider?')) return;
+    const confirmed = await ask(
+      'Are you sure you want to delete this provider?',
+      {
+        title: 'Delete Provider',
+        kind: 'warning',
+      },
+    );
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/providers/${providerId}`, {
@@ -183,6 +202,10 @@
       await loadProviders();
     } catch (error) {
       console.error('Failed to delete provider:', error);
+      await tauriMessage('Failed to delete provider. Please try again.', {
+        title: 'Error',
+        kind: 'error',
+      });
     }
   }
 </script>
@@ -194,7 +217,9 @@
     <h2>Providers</h2>
 
     {#if providers.length === 0}
-      <p class="empty-state">No providers configured. Add one to get started.</p>
+      <p class="empty-state">
+        No providers configured. Add one to get started.
+      </p>
     {:else}
       <div class="provider-list">
         {#each providers as provider}
@@ -205,10 +230,16 @@
               <p class="provider-key">API Key: {provider.apiKey}</p>
             </div>
             <div class="provider-actions">
-              <button class="btn-secondary" onclick={() => handleSetDefault(provider.id)}>
+              <button
+                class="btn-secondary"
+                onclick={() => handleSetDefault(provider.id)}
+              >
                 Set Default
               </button>
-              <button class="btn-danger" onclick={() => handleDeleteProvider(provider.id)}>
+              <button
+                class="btn-danger"
+                onclick={() => handleDeleteProvider(provider.id)}
+              >
                 Delete
               </button>
             </div>
@@ -217,7 +248,10 @@
       </div>
     {/if}
 
-    <button class="btn-primary" onclick={() => (showAddProvider = !showAddProvider)}>
+    <button
+      class="btn-primary"
+      onclick={() => (showAddProvider = !showAddProvider)}
+    >
       {showAddProvider ? 'Cancel' : 'Add Provider'}
     </button>
 
@@ -318,7 +352,8 @@
             <option value={model.id}>
               {model.name}
               {#if model.pricing}
-                - ${model.pricing.promptTokens}/1M input, ${model.pricing.completionTokens}/1M output
+                - ${model.pricing.promptTokens}/1M input, ${model.pricing
+                  .completionTokens}/1M output
               {/if}
             </option>
           {/each}
@@ -508,7 +543,7 @@
     }
 
     .btn-primary {
-      background: var(--primary);
+      background: var(--gray);
       color: white;
 
       &:hover:not(:disabled) {

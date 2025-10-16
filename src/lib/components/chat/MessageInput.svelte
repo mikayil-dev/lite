@@ -9,7 +9,11 @@
     placeholder?: string;
   }
 
-  let { onSend, disabled = false, placeholder = 'Type a message...' }: Props = $props();
+  let {
+    onSend,
+    disabled = false,
+    placeholder = 'Type a message...',
+  }: Props = $props();
 
   let message = $state('');
   let textarea: HTMLTextAreaElement;
@@ -59,7 +63,12 @@
     oninput={handleInput}
   ></textarea>
   <div class="toolbar">
-    <IconButton primary style="margin-left: auto;" disabled={!message.trim() || disabled} onclick={handleSend}>
+    <IconButton
+      primary
+      style="margin-left: auto;"
+      disabled={!message.trim() || disabled}
+      onclick={handleSend}
+    >
       <ArrowUp />
     </IconButton>
   </div>

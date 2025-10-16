@@ -66,7 +66,10 @@ export async function streamingChat() {
 /**
  * Example 3: Using database-stored provider configuration
  */
-export async function chatWithStoredProvider(chatId: string, userMessage: string) {
+export async function chatWithStoredProvider(
+  chatId: string,
+  userMessage: string,
+) {
   // Get the default provider from the database
   const providerConfig = await ProviderDB.getDefault();
 
@@ -99,7 +102,7 @@ export async function chatWithStoredProvider(chatId: string, userMessage: string
   // Get response
   const response = await providerManager.createChatCompletion(
     providerConfig,
-    request
+    request,
   );
 
   // Save assistant response
@@ -117,7 +120,7 @@ export async function chatWithStoredProvider(chatId: string, userMessage: string
   await ProviderDB.updateModelPreference(
     providerConfig.id,
     response.model,
-    response.model
+    response.model,
   );
 
   return response;
@@ -128,9 +131,21 @@ export async function chatWithStoredProvider(chatId: string, userMessage: string
  */
 export async function compareProviders(prompt: string) {
   const providers = [
-    { type: 'openai' as const, apiKey: process.env.OPENAI_API_KEY || '', model: 'gpt-4o-mini' },
-    { type: 'anthropic' as const, apiKey: process.env.ANTHROPIC_API_KEY || '', model: 'claude-3-5-haiku-20241022' },
-    { type: 'openrouter' as const, apiKey: process.env.OPENROUTER_API_KEY || '', model: 'meta-llama/llama-3.1-8b-instruct:free' },
+    {
+      type: 'openai' as const,
+      apiKey: process.env.OPENAI_API_KEY || '',
+      model: 'gpt-4o-mini',
+    },
+    {
+      type: 'anthropic' as const,
+      apiKey: process.env.ANTHROPIC_API_KEY || '',
+      model: 'claude-3-5-haiku-20241022',
+    },
+    {
+      type: 'openrouter' as const,
+      apiKey: process.env.OPENROUTER_API_KEY || '',
+      model: 'meta-llama/llama-3.1-8b-instruct:free',
+    },
   ];
 
   const results = await Promise.allSettled(
@@ -143,7 +158,7 @@ export async function compareProviders(prompt: string) {
           model: provider.model,
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 100,
-        }
+        },
       );
 
       const duration = Date.now() - startTime;
@@ -155,7 +170,7 @@ export async function compareProviders(prompt: string) {
         tokens: response.usage?.totalTokens,
         duration,
       };
-    })
+    }),
   );
 
   return results.map((result, index) => {
@@ -173,7 +188,9 @@ export async function compareProviders(prompt: string) {
 /**
  * Example 5: Getting and caching models
  */
-export async function listAvailableModels(providerType: 'openai' | 'anthropic' | 'openrouter') {
+export async function listAvailableModels(
+  providerType: 'openai' | 'anthropic' | 'openrouter',
+) {
   const apiKeyMap = {
     openai: process.env.OPENAI_API_KEY,
     anthropic: process.env.ANTHROPIC_API_KEY,
@@ -249,12 +266,16 @@ export async function handleChatRequest(requestBody: {
   // Get streaming response
   const stream = providerManager.createChatCompletionStream(
     providerConfig,
-    request
+    request,
   );
 
   return {
     stream,
-    async saveResponse(fullResponse: string, model: string, usage?: { promptTokens: number; completionTokens: number }) {
+    async saveResponse(
+      fullResponse: string,
+      model: string,
+      usage?: { promptTokens: number; completionTokens: number },
+    ) {
       await ProviderDB.saveMessage({
         chatId,
         role: 'assistant',

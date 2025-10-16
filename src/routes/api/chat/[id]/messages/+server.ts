@@ -20,8 +20,10 @@ export const GET: RequestHandler = async ({ params }) => {
   } catch (error) {
     console.error('Get messages error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

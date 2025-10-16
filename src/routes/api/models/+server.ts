@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url }) => {
     if (!providerConfig) {
       return json(
         { error: 'No provider configuration found' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,8 +30,10 @@ export const GET: RequestHandler = async ({ url }) => {
   } catch (error) {
     console.error('Get models error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

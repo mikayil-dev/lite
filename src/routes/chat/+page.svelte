@@ -25,14 +25,15 @@
         // Load models for the selected provider
         isLoadingModels = true;
         const modelsResponse = await fetch(
-          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`
+          `/api/models?providerId=${prefsData.preferences.selectedProviderId}`,
         );
         const modelsData = await modelsResponse.json();
         availableModels = modelsData.models || [];
 
         // Set selected model from preferences or use first available
-        selectedModel = prefsData.preferences.selectedModelId ||
-                       (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
+        selectedModel =
+          prefsData.preferences.selectedModelId ||
+          (availableModels.length > 0 ? availableModels[0].id : 'gpt-4o-mini');
       } else {
         selectedModel = 'gpt-4o-mini'; // Fallback
       }
@@ -66,7 +67,9 @@
       triggerChatRefresh();
 
       // Navigate to the new chat and send the message
-      await goto(`/chat/${data.id}?initialMessage=${encodeURIComponent(message)}&model=${encodeURIComponent(selectedModel)}`);
+      await goto(
+        `/chat/${data.id}?initialMessage=${encodeURIComponent(message)}&model=${encodeURIComponent(selectedModel)}`,
+      );
     } catch (error) {
       console.error('Failed to create chat:', error);
       alert('Failed to create chat');
@@ -95,7 +98,8 @@
             <option value={model.id}>
               {model.name}
               {#if model.pricing}
-                - ${model.pricing.promptTokens}/1M input, ${model.pricing.completionTokens}/1M output
+                - ${model.pricing.promptTokens}/1M input, ${model.pricing
+                  .completionTokens}/1M output
               {/if}
             </option>
           {/each}

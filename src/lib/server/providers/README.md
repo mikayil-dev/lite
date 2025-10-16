@@ -33,10 +33,8 @@ const response = await providerManager.createChatCompletion(
   },
   {
     model: 'gpt-4o',
-    messages: [
-      { role: 'user', content: 'Hello, how are you?' }
-    ],
-  }
+    messages: [{ role: 'user', content: 'Hello, how are you?' }],
+  },
 );
 
 console.log(response.content);
@@ -52,10 +50,8 @@ const stream = providerManager.createChatCompletionStream(
   },
   {
     model: 'claude-3-5-sonnet-20241022',
-    messages: [
-      { role: 'user', content: 'Write a story about a robot.' }
-    ],
-  }
+    messages: [{ role: 'user', content: 'Write a story about a robot.' }],
+  },
 );
 
 for await (const chunk of stream) {
@@ -84,25 +80,25 @@ models.forEach(model => {
 import { ProviderDB } from '$lib/server/providers/db';
 
 // Create a new provider configuration
-const providerId = await ProviderDB.create({
-  name: 'My OpenAI Config',
-  type: 'openai',
-  apiKey: 'sk-...',
-  organization: 'org-...',
-}, true); // Set as default
+const providerId = await ProviderDB.create(
+  {
+    name: 'My OpenAI Config',
+    type: 'openai',
+    apiKey: 'sk-...',
+    organization: 'org-...',
+  },
+  true,
+); // Set as default
 
 // Get the default provider
 const defaultProvider = await ProviderDB.getDefault();
 
 // Use the stored configuration
 if (defaultProvider) {
-  const response = await providerManager.createChatCompletion(
-    defaultProvider,
-    {
-      model: 'gpt-4o',
-      messages: [{ role: 'user', content: 'Hello!' }],
-    }
-  );
+  const response = await providerManager.createChatCompletion(defaultProvider, {
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hello!' }],
+  });
 }
 ```
 
@@ -195,18 +191,15 @@ const response = await provider.createChatCompletion({
 ### Custom Temperature and Parameters
 
 ```typescript
-const response = await providerManager.createChatCompletion(
-  config,
-  {
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: 'Be creative!' }],
-    temperature: 0.9,
-    max_tokens: 2000,
-    top_p: 0.95,
-    frequency_penalty: 0.5,
-    presence_penalty: 0.5,
-  }
-);
+const response = await providerManager.createChatCompletion(config, {
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Be creative!' }],
+  temperature: 0.9,
+  max_tokens: 2000,
+  top_p: 0.95,
+  frequency_penalty: 0.5,
+  presence_penalty: 0.5,
+});
 ```
 
 ### Error Handling

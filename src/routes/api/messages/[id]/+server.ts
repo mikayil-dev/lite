@@ -21,8 +21,10 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
   } catch (error) {
     console.error('Update message error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -41,8 +43,10 @@ export const DELETE: RequestHandler = async ({ params }) => {
   } catch (error) {
     console.error('Delete message error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

@@ -27,8 +27,10 @@ export const GET: RequestHandler = async ({ params }) => {
   } catch (error) {
     console.error('Get chat error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -51,8 +53,10 @@ export const PATCH: RequestHandler = async ({ params, request }) => {
   } catch (error) {
     console.error('Update chat error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -69,8 +73,10 @@ export const DELETE: RequestHandler = async ({ params }) => {
   } catch (error) {
     console.error('Delete chat error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };

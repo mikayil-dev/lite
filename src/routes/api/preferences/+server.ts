@@ -14,8 +14,10 @@ export const GET: RequestHandler = async () => {
   } catch (error) {
     console.error('Get preferences error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
@@ -30,15 +32,17 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     await ProviderDB.updateUserPreferences(
       selectedProviderId ?? null,
-      selectedModelId ?? null
+      selectedModelId ?? null,
     );
 
     return json({ message: 'Preferences updated successfully' });
   } catch (error) {
     console.error('Update preferences error:', error);
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : 'Internal server error',
+      },
+      { status: 500 },
     );
   }
 };
