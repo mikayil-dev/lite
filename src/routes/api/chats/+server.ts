@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/db';
-import type { RequestHandler } from './$types';
 import { nanoid } from 'nanoid';
+import type { RequestHandler } from './$types';
+import { db } from '$lib/server/db/db';
 
 /**
  * GET /api/chats
@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid';
  */
 export const GET: RequestHandler = async ({ url }) => {
   try {
-    const sortBy = url.searchParams.get('sortBy') || 'last_message';
+    const sortBy = url.searchParams.get('sortBy') ?? 'last_message';
 
     let query = `
       SELECT
@@ -54,18 +54,18 @@ export const GET: RequestHandler = async ({ url }) => {
  */
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { title } = await request.json();
+    const { title } = (await request.json()) as { title?: string };
 
     const id = nanoid();
     const now = new Date().toISOString();
 
     await db.get('INSERT INTO chats (id, title, created_at) VALUES (?, ?, ?)', [
       id,
-      title || 'New Chat',
+      title ?? 'New Chat',
       now,
     ]);
 
-    return json({ id, title: title || 'New Chat', created_at: now });
+    return json({ id, title: title ?? 'New Chat', created_at: now });
   } catch (error) {
     console.error('Create chat error:', error);
     return json(

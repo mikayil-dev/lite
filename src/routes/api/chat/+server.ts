@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { providerManager, ProviderDB } from '$lib/providers/index';
 import type { RequestHandler } from './$types';
+import { providerManager, ProviderDB } from '$lib/providers/index';
 
 /**
  * POST /api/chat
@@ -8,7 +8,12 @@ import type { RequestHandler } from './$types';
  */
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { message, chatId, providerId, model } = await request.json();
+    const { message, chatId, providerId, model } = (await request.json()) as {
+      message: string;
+      chatId: string;
+      providerId?: number;
+      model?: string;
+    };
 
     if (!message || !chatId) {
       return json(
@@ -18,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     // Get provider config
-    let providerConfig;
+    let providerConfig: Awaited<ReturnType<typeof ProviderDB.getById>> | Awaited<ReturnType<typeof ProviderDB.getDefault>>;
     if (providerId) {
       providerConfig = await ProviderDB.getById(providerId);
     } else {
@@ -40,14 +45,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Save user message
     await ProviderDB.saveMessage({
-      chatId,
-      role: 'user',
+      chatId: chatId,
+      role: 'user' as const,
       content: message,
     });
 
     // Create streaming response
     const stream = providerManager.createChatCompletionStream(providerConfig, {
-      model: model || 'gpt-4o-mini',
+      model: model ?? 'gpt-4o-mini',
       messages: [
         ...history.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content: message },
@@ -55,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
     });
 
     let fullResponse = '';
-    let finishReason: 'stop' | 'length' | 'content_filter' | null = null;
+    let _finishReason: 'stop' | 'length' | 'content_filter' | null = null;
 
     const encoder = new TextEncoder();
     const readableStream = new ReadableStream({
@@ -64,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
           for await (const chunk of stream) {
             fullResponse += chunk.delta;
             if (chunk.finishReason) {
-              finishReason = chunk.finishReason;
+              _finishReason = chunk.finishReason;
             }
 
             // Send chunk to client
@@ -77,18 +82,18 @@ export const POST: RequestHandler = async ({ request }) => {
 
           // Save assistant response to database
           await ProviderDB.saveMessage({
-            chatId,
-            role: 'assistant',
+            chatId: chatId,
+            role: 'assistant' as const,
             content: fullResponse,
-            model: model || 'gpt-4o-mini',
-            providerId: providerConfig!.id,
+            model: model ?? 'gpt-4o-mini',
+            providerId: providerConfig.id,
           });
 
           // Update model preference
           await ProviderDB.updateModelPreference(
-            providerConfig!.id,
-            model || 'gpt-4o-mini',
-            model || 'gpt-4o-mini',
+            providerConfig.id,
+            model ?? 'gpt-4o-mini',
+            model ?? 'gpt-4o-mini',
           );
 
           // Send done signal

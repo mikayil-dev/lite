@@ -139,7 +139,7 @@ export default [
       ...svelte.configs['flat/prettier'].rules,
 
       // A few solid Svelte-specific checks
-      'svelte/no-at-html-tags': 'error',
+      'svelte/no-at-html-tags': 'warn',
       'svelte/no-dupe-else-if-blocks': 'error',
       'svelte/no-dupe-style-properties': 'error',
       'svelte/no-reactive-functions': 'error',

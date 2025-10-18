@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/db';
 import type { RequestHandler } from './$types';
-import { triggerChatRefresh } from '$lib/stores/chatStore';
+import { db } from '$lib/server/db/db';
 
 /**
  * GET /api/chats/[id]
@@ -41,7 +40,7 @@ export const GET: RequestHandler = async ({ params }) => {
  */
 export const PATCH: RequestHandler = async ({ params, request }) => {
   try {
-    const { title } = await request.json();
+    const { title } = (await request.json()) as { title: string };
 
     if (!title) {
       return json({ error: 'Title is required' }, { status: 400 });

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/db';
 import type { RequestHandler } from './$types';
+import { db } from '$lib/server/db/db';
 
 /**
  * PATCH /api/messages/[id]
@@ -9,7 +9,7 @@ import type { RequestHandler } from './$types';
 export const PATCH: RequestHandler = async ({ params, request }) => {
   try {
     const { id } = params;
-    const { content } = await request.json();
+    const { content } = (await request.json()) as { content: string };
 
     if (!content) {
       return json({ error: 'Content is required' }, { status: 400 });

@@ -1,5 +1,5 @@
-import type { IProvider } from './base';
 import { ProviderFactory } from './factory';
+import type { IProvider } from './base';
 import type {
   ProviderConfig,
   ChatCompletionRequest,
@@ -14,9 +14,9 @@ import type {
  * Manager for handling multiple providers and caching
  */
 export class ProviderManager {
-  private providers: Map<string, IProvider> = new Map();
-  private modelCache: Map<string, Model[]> = new Map();
-  private cacheExpiry: Map<string, number> = new Map();
+  private providers = new Map<string, IProvider>();
+  private modelCache = new Map<string, Model[]>();
+  private cacheExpiry = new Map<string, number>();
   private readonly CACHE_TTL = 3600000; // 1 hour in milliseconds
 
   /**
@@ -126,7 +126,7 @@ export class ProviderManager {
    * Generate a unique key for a provider configuration
    */
   private generateProviderKey(config: ProviderConfig): string {
-    return `${config.type}:${config.baseUrl || 'default'}:${config.apiKey.slice(0, 8)}`;
+    return `${config.type}:${config.baseUrl ?? 'default'}:${config.apiKey.slice(0, 8)}`;
   }
 
   /**

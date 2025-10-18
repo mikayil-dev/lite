@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { ProviderDB } from '$lib/providers/index';
 import type { RequestHandler } from './$types';
+import { ProviderDB } from '$lib/providers/index';
 
 /**
  * GET /api/providers
@@ -35,7 +35,15 @@ export const GET: RequestHandler = async () => {
  */
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as {
+      name?: string;
+      type?: string;
+      apiKey?: string;
+      baseUrl?: string;
+      organization?: string;
+      customHeaders?: Record<string, string>;
+      setAsDefault?: boolean;
+    };
     console.log('Received provider creation request:', {
       ...body,
       apiKey: '[REDACTED]',
@@ -74,12 +82,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const id = await ProviderDB.create(
       {
-        name,
-        type,
-        apiKey,
-        baseUrl,
-        organization,
-        customHeaders,
+        name: name,
+        type: type,
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        organization: organization,
+        customHeaders: customHeaders,
       },
       setAsDefault,
     );

@@ -1,5 +1,5 @@
-import { query, execute } from '$lib/db/client';
 import type { MessageRole } from '$lib/providers/types';
+import { query, execute } from '$lib/db/client';
 
 export interface MessageRow {
   id: number;

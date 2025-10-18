@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { ProviderDB } from '$lib/providers/index';
 import type { RequestHandler } from './$types';
+import { ProviderDB } from '$lib/providers/index';
 
 /**
  * GET /api/chat/[id]/messages

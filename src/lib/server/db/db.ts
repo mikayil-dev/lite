@@ -2,7 +2,6 @@ import { readFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { cwd } from 'process';
 import sqlite3 from 'sqlite3';
-import { appDataDir } from '@tauri-apps/api/path';
 
 export class Database {
   private db: sqlite3.Database;
@@ -31,10 +30,10 @@ export class Database {
     // Try production location (bundled resources)
     if (process.resourcesPath) {
       try {
-        const prodPath = join(process.resourcesPath, sqlFileName);
+        const prodPath = join(process.resourcesPath as string, sqlFileName);
         return readFileSync(prodPath, 'utf8');
       } catch (error) {
-        console.warn('Could not load SQL from resources:', error);
+        console.warn('Could not load SQL from resources:', error instanceof Error ? error.message : String(error));
       }
     }
     
@@ -54,13 +53,13 @@ export class Database {
       // This will be resolved asynchronously, but we need sync for constructor
       // For now, use a synchronous fallback
       const platform = process.platform;
-      const home = process.env.HOME || process.env.USERPROFILE || '';
+      const home = process.env.HOME ?? process.env.USERPROFILE ?? '';
       
       let appData = '';
       if (platform === 'darwin') {
         appData = join(home, 'Library', 'Application Support', 'com.lite.app');
       } else if (platform === 'win32') {
-        appData = join(process.env.APPDATA || '', 'com.lite.app');
+        appData = join(process.env.APPDATA ?? '', 'com.lite.app');
       } else {
         appData = join(home, '.local', 'share', 'com.lite.app');
       }

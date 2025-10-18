@@ -1,7 +1,7 @@
-import type { IProvider } from './base';
-import { OpenAIProvider } from './openai';
 import { AnthropicProvider } from './anthropic';
+import { OpenAIProvider } from './openai';
 import { OpenRouterProvider } from './openrouter';
+import type { IProvider } from './base';
 import type { ProviderConfig, ProviderType } from './types';
 
 /**
@@ -22,8 +22,10 @@ export class ProviderFactory {
       case 'custom':
         // For custom providers, use OpenAI-compatible API
         return new OpenAIProvider(config);
-      default:
-        throw new Error(`Unsupported provider type: ${config.type}`);
+      default: {
+        const _exhaustiveCheck: never = config.type;
+        throw new Error(`Unsupported provider type: ${String(config.type)}`);
+      }
     }
   }
 

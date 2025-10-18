@@ -1,5 +1,5 @@
-import { query, execute } from '$lib/db/client';
 import type { ProviderConfig, ProviderType } from '$lib/providers/types';
+import { query, execute } from '$lib/db/client';
 
 export interface ProviderRow {
   id: number;
@@ -29,7 +29,7 @@ function rowToProvider(row: ProviderRow): ProviderData {
     baseUrl: row.base_url ?? undefined,
     organization: row.organization ?? undefined,
     customHeaders: row.custom_headers
-      ? JSON.parse(row.custom_headers)
+      ? (JSON.parse(row.custom_headers) as Record<string, string>)
       : undefined,
     isDefault: row.is_default === 1,
   };

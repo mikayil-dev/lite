@@ -1,5 +1,5 @@
-import { db } from '$lib/server/db/db';
 import type { ProviderConfig, ProviderType, ConfigValuesDb } from './types';
+import { db } from '$lib/server/db/db';
 
 /**
  * Database interface for provider configurations

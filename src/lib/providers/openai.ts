@@ -38,7 +38,7 @@ export class OpenAIProvider extends BaseProvider {
   }
 
   protected getBaseUrl(): string {
-    return this.config.baseUrl || this.DEFAULT_BASE_URL;
+    return this.config.baseUrl ?? this.DEFAULT_BASE_URL;
   }
 
   async getModels(): Promise<Model[]> {
@@ -184,7 +184,7 @@ export class OpenAIProvider extends BaseProvider {
         if (!choice) continue;
 
         yield {
-          delta: choice.delta.content || '',
+          delta: choice.delta.content ?? '',
           finishReason: choice.finish_reason
             ? this.mapFinishReason(choice.finish_reason)
             : undefined,

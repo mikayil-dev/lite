@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { ProviderDB } from '$lib/providers/index';
 import type { RequestHandler } from './$types';
+import { ProviderDB } from '$lib/providers/index';
 
 /**
  * PATCH /api/providers/[id]
@@ -9,7 +9,7 @@ import type { RequestHandler } from './$types';
 export const PATCH: RequestHandler = async ({ params, request }) => {
   try {
     const { id } = params;
-    const updates = await request.json();
+    const updates = (await request.json()) as Record<string, unknown>;
 
     if (!id) {
       return json({ error: 'Provider ID is required' }, { status: 400 });

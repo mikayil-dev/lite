@@ -3,17 +3,17 @@
  * This file demonstrates how to integrate the provider system in your SvelteKit application
  */
 
-import { providerManager } from './manager';
 import { ProviderDB } from './db';
+import { providerManager } from './manager';
 import type { ProviderConfig, ChatCompletionRequest } from './types';
 
 /**
  * Example 1: Simple chat completion
  */
-export async function simpleChat() {
+export async function simpleChat(): Promise<ChatCompletionResponse> {
   const config: ProviderConfig = {
     type: 'openai',
-    apiKey: process.env.OPENAI_API_KEY || '',
+    apiKey: process.env.OPENAI_API_KEY ?? '',
   };
 
   const request: ChatCompletionRequest = {
@@ -36,10 +36,10 @@ export async function simpleChat() {
 /**
  * Example 2: Streaming chat completion
  */
-export async function streamingChat() {
+export async function streamingChat(): Promise<string> {
   const config: ProviderConfig = {
     type: 'anthropic',
-    apiKey: process.env.ANTHROPIC_API_KEY || '',
+    apiKey: process.env.ANTHROPIC_API_KEY ?? '',
   };
 
   const request: ChatCompletionRequest = {
@@ -69,7 +69,7 @@ export async function streamingChat() {
 export async function chatWithStoredProvider(
   chatId: string,
   userMessage: string,
-) {
+): Promise<ChatCompletionResponse> {
   // Get the default provider from the database
   const providerConfig = await ProviderDB.getDefault();
 
@@ -129,21 +129,28 @@ export async function chatWithStoredProvider(
 /**
  * Example 4: Multi-provider comparison
  */
-export async function compareProviders(prompt: string) {
+export async function compareProviders(prompt: string): Promise<Array<{
+  provider: string;
+  model?: string;
+  response?: string;
+  tokens?: number;
+  duration?: number;
+  error?: string;
+}>> {
   const providers = [
     {
       type: 'openai' as const,
-      apiKey: process.env.OPENAI_API_KEY || '',
+      apiKey: process.env.OPENAI_API_KEY ?? '',
       model: 'gpt-4o-mini',
     },
     {
       type: 'anthropic' as const,
-      apiKey: process.env.ANTHROPIC_API_KEY || '',
+      apiKey: process.env.ANTHROPIC_API_KEY ?? '',
       model: 'claude-3-5-haiku-20241022',
     },
     {
       type: 'openrouter' as const,
-      apiKey: process.env.OPENROUTER_API_KEY || '',
+      apiKey: process.env.OPENROUTER_API_KEY ?? '',
       model: 'meta-llama/llama-3.1-8b-instruct:free',
     },
   ];
@@ -177,9 +184,10 @@ export async function compareProviders(prompt: string) {
     if (result.status === 'fulfilled') {
       return result.value;
     } else {
+      const error = result.reason as Error;
       return {
         provider: providers[index].type,
-        error: result.reason.message,
+        error: error.message,
       };
     }
   });
@@ -190,7 +198,12 @@ export async function compareProviders(prompt: string) {
  */
 export async function listAvailableModels(
   providerType: 'openai' | 'anthropic' | 'openrouter',
-) {
+): Promise<Array<{
+  id: string;
+  name: string;
+  contextWindow: number;
+  pricing?: { promptTokens: number; completionTokens: number };
+}>> {
   const apiKeyMap = {
     openai: process.env.OPENAI_API_KEY,
     anthropic: process.env.ANTHROPIC_API_KEY,
@@ -199,7 +212,7 @@ export async function listAvailableModels(
 
   const config: ProviderConfig = {
     type: providerType,
-    apiKey: apiKeyMap[providerType] || '',
+    apiKey: apiKeyMap[providerType] ?? '',
   };
 
   // First call - fetches from API
@@ -209,7 +222,7 @@ export async function listAvailableModels(
 
   // Second call - returns from cache
   console.time('Cached fetch');
-  const models2 = await providerManager.getModels(config);
+  const _models2 = await providerManager.getModels(config);
   console.timeEnd('Cached fetch');
 
   return models1.map((model) => ({
@@ -229,7 +242,10 @@ export async function handleChatRequest(requestBody: {
   message: string;
   chatId: string;
   providerId?: number;
-}) {
+}): Promise<{
+  stream: AsyncGenerator<StreamChunk>;
+  saveResponse: (fullResponse: string, model: string, usage?: { promptTokens: number; completionTokens: number }) => Promise<void>;
+}> {
   const { message, chatId, providerId } = requestBody;
 
   // Get provider config
@@ -281,7 +297,7 @@ export async function handleChatRequest(requestBody: {
         role: 'assistant',
         content: fullResponse,
         model,
-        providerId: providerConfig!.id,
+        providerId: providerConfig.id,
         tokensPrompt: usage?.promptTokens,
         tokensCompletion: usage?.completionTokens,
       });

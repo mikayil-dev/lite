@@ -1,6 +1,6 @@
-import { ProviderFactory } from '$lib/providers/factory';
 import type { ProviderConfig, Model, ChatCompletionRequest, StreamChunk } from '$lib/providers/types';
 import type { ProviderData } from './providers';
+import { ProviderFactory } from '$lib/providers/factory';
 
 /**
  * Get models from a provider (calls external API)
