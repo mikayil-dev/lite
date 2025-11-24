@@ -41,7 +41,7 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
       eqeqeq: ['error', 'always'],
       'no-var': 'error',
       'prefer-const': ['error', { destructuring: 'all' }],
