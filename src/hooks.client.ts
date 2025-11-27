@@ -1,5 +1,4 @@
-import Database from '@tauri-apps/plugin-sql';
+import { getDb } from 'lib/db';
 
-export const db = await Database.load('sqlite:main.db').then((db) => {
-  console.info('Database connected', db);
-});
+/** Client-side database instance */
+export const db = await getDb();

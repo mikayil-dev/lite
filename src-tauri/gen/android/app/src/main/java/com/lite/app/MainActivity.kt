@@ -1,3 +1,3 @@
-package com.lite.app
+package com.lite.tauri
 
 class MainActivity : TauriActivity()

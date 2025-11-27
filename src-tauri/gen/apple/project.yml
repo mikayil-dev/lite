@@ -1,6 +1,6 @@
 name: lite
 options:
-  bundleIdPrefix: com.lite.app
+  bundleIdPrefix: com.lite.tauri
   deploymentTarget:
     iOS: 13.0
 fileGroups: [../../src]
@@ -11,7 +11,7 @@ settingGroups:
   app:
     base:
       PRODUCT_NAME: lite
-      PRODUCT_BUNDLE_IDENTIFIER: com.lite.app
+      PRODUCT_BUNDLE_IDENTIFIER: com.lite.tauri
 targetTemplates:
   app:
     type: application
