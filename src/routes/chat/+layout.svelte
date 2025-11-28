@@ -1,11 +1,14 @@
 <script lang="ts">
   import Sidebar from 'lib/components/Sidebar.svelte';
 
-  let { children } = $props();
+  let { children, data } = $props();
+  let chats = $derived(data.chats);
+  1;
 </script>
 
 <div class="layout">
-  <Sidebar />
+  <Sidebar {chats} />
+
   <main>
     {@render children?.()}
   </main>

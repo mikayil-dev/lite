@@ -1,6 +1,8 @@
 <script>
-  import IconButton from "./buttons/IconButton.svelte";
+  import IconButton from './buttons/IconButton.svelte';
   import SettingsIcon from '~icons/solar/settings-linear';
+
+  let { chats = [] } = $props();
 </script>
 
 <aside>
@@ -9,9 +11,9 @@
   </div>
 
   <nav>
-    <a class="chat-link" href="/chat/1">Test Chat Title 1</a>
-    <a class="chat-link" href="/chat/2">Test Chat Title 2</a>
-    <a class="chat-link" href="/chat/3">Test Chat Title 3</a>
+    {#each chats as chat}
+      <a class="chat-link" href="/chat/{chat.id}">{chat.title}</a>
+    {/each}
   </nav>
 
   <div class="settings-container">
