@@ -1,8 +1,7 @@
 <script>
+  import { chats } from 'lib/stores/state.svelte';
   import IconButton from './buttons/IconButton.svelte';
   import SettingsIcon from '~icons/solar/settings-linear';
-
-  let { chats = [] } = $props();
 </script>
 
 <aside>
@@ -11,7 +10,7 @@
   </div>
 
   <nav>
-    {#each chats as chat}
+    {#each Object.values(chats) as chat}
       <a class="chat-link" href="/chat/{chat.id}">{chat.title}</a>
     {/each}
   </nav>
