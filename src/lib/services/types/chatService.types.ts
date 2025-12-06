@@ -1,4 +1,4 @@
-export interface Chat {
+export interface ChatRow {
   id: string;
   title: string;
   created_at: string;
