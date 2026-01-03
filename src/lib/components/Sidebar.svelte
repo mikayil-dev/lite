@@ -1,5 +1,5 @@
 <script>
-  import { chats } from 'lib/stores/state.svelte';
+  import { Chat } from 'lib/services/Chat.svelte';
   import IconButton from './buttons/IconButton.svelte';
   import SettingsIcon from '~icons/solar/settings-linear';
 </script>
@@ -10,7 +10,7 @@
   </div>
 
   <nav>
-    {#each Object.values(chats) as chat}
+    {#each Object.values(Chat.getChats()) as chat}
       <a class="chat-link" href="/chat/{chat.id}">{chat.title}</a>
     {/each}
   </nav>

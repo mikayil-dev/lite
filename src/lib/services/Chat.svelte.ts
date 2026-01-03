@@ -1,9 +1,11 @@
 import { db } from '../../hooks.client';
 import type { ChatRow } from './types/Chat.types';
 
+const chatState: Record<string, ChatRow> = $state({});
+
 export class Chat {
   private static initialized = false;
-  private static allChats: Record<string, ChatRow> = $state({});
+  private static allChats = chatState;
 
   constructor(
     public id: string,
