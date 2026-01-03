@@ -1,29 +1,38 @@
-# Tauri + SvelteKit + TypeScript
+# Lite (Working Title)
 
-This template should help get you started developing with Tauri, SvelteKit and TypeScript in Vite.
+A lightweight OpenRouter (and potentially more) desktop app.
+A working prototype written very quickly with AI can be found on the ai-code-prototype branch. Currently only working on it for fun when I have nothing to do.
 
-## Recommended IDE Setup
+## TODOs
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+### Core Features
 
-## TODOS
-
-- [ ] Lightweight BYOK Chat App
-  - [x] Fonts (JetBrains Mono for codeblocks)
-  - [ ] Settings page for key etc.
-  - [ ] Page: Start new Chat
-  - [ ] Page: Individual Chat
-  - [ ] Model picker
-  - [ ] OpenRouter support
-  - [ ] Markdown parser for responses
-  - [ ] Transitions and Eye Candy toggleable
-  - [ ] Lightmode
-  - [ ] Settings for chat message
-  - [ ] Attachments (PDFs, Imgs, Word docs, etc.)
-  - [ ] System prompt (default and adjustable)
-  - [ ] Streaming of responses (with option to turn off) (?)
-  - [ ] COT/Reasoning streaming (with option to turn off)
-  - [ ] support other APIs with the OpenAPI spec
-
+- [ ] All-encompassing AI Tool
 - [ ] AI Agent GUI Mode
-  - soon...
+
+### Lightweight BYOK Chat App
+
+#### Completed
+- [x] Fonts (JetBrains Mono for code blocks)
+
+#### UI & Pages
+- [ ] Settings page for API key configuration
+- [ ] Start new chat page
+- [ ] Individual chat page
+- [ ] Light mode theme
+- [ ] Toggleable transitions and visual effects
+
+#### Chat Functionality
+- [ ] Model picker
+- [ ] OpenRouter support
+- [ ] Markdown parser for responses
+- [ ] Chat message settings
+- [ ] Attachments support (PDFs, images, Word documents, etc.)
+- [ ] System prompt (default and adjustable)
+- [ ] Streaming responses (with toggle option)
+- [ ] Chain-of-thought/reasoning streaming (with toggle option)
+
+#### API Integration
+- [ ] Support for other APIs with OpenAPI specification
+- [ ] Local AI with Ollama
+ - soon...
