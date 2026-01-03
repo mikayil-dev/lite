@@ -5,6 +5,12 @@ export class Chat {
   private static initialized = false;
   private static allChats: Record<string, ChatRow> = $state({});
 
+  constructor(
+    public id: string,
+    public title: string,
+    public readonly created_at: string,
+  ) {}
+
   private static async initChats(): Promise<void> {
     if (this.initialized) return;
 
@@ -17,7 +23,7 @@ export class Chat {
     this.initialized = true;
   }
 
-  static get allChatsArray(): Readonly<ChatRow>[] {
+  static get allChatsArray(): readonly Readonly<ChatRow>[] {
     return Object.values(Chat.allChats);
   }
 
@@ -36,5 +42,17 @@ export class Chat {
     if (Array.isArray(chats) && chats[0]) return chats[0];
 
     return null;
+  }
+
+  async addMessage(): Promise<unknown> {
+    return new Promise(() => true);
+  }
+
+  async editMessage(): Promise<unknown> {
+    return new Promise(() => true);
+  }
+
+  async deleteMessage(): Promise<unknown> {
+    return new Promise(() => true);
   }
 }
